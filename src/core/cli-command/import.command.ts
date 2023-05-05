@@ -1,11 +1,14 @@
 import TSVFileReader from '../file-reader/tsv-file-reader.js';
 import { CliCommandInterface } from './cli-command.interface.js';
+import chalk from 'chalk';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
   public execute(filename: string): void {
     if (!filename){
-      console.log('после --import укажите путь к файлу\nпример: npm run ts ./src/main.cli.ts -- --import ./mocks/mock-data.tsv');
+      console.log(`
+  ${chalk.redBright('после')} --import ${chalk.redBright('укажите путь к файлу')}
+  ${chalk.cyanBright('пример:')} npm run ts ./src/main.cli.ts -- --import ./mocks/mock-data.tsv`);
       return;
     }
     const fileReader = new TSVFileReader(filename.trim());
