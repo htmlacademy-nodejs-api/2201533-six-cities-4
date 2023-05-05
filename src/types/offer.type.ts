@@ -1,14 +1,7 @@
-type Location = {
-  latitude: number;
-  longitude: number;
-}
+import {City} from './city.type';
+import {Location} from './location.type';
 
-type City = {
-  name: string;
-  location: Location;
-}
-
-type Offer = {
+export type Offer = {
   title: string;
   description: string;
   date: Date;
