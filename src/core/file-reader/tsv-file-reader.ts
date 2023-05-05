@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { FileReaderInterface } from './file-reader.interface.js';
 import { Offer } from '../../types/offer.type.js';
-import {cities} from '../../types/cities.enum';
-import {Goods} from '../../types/goods.enum';
-import {OfferType} from '../../types/offer-type.enum';
+import {cities} from '../../types/cities.enum.js';
+import {Goods} from '../../types/goods.enum.js';
+import {OfferType} from '../../types/offer-type.enum.js';
 
 export default class TSVFileReader implements FileReaderInterface {
   private rawData = '';
@@ -25,7 +25,7 @@ export default class TSVFileReader implements FileReaderInterface {
       .map((line) => line.split('\t'))
       .map(([title, description, date, city, previewImage, images, isPremium,
         isFavorite, rating, type, bedrooms, maxAdults, price, goods,
-        host, commentsCount, location]) => ({
+        host, commentsCount, latitude, longitude]) => ({
         title,
         description,
         date: new Date(date),
@@ -35,18 +35,16 @@ export default class TSVFileReader implements FileReaderInterface {
         isPremium: isPremium.trim().toUpperCase() === 'TRUE',
         isFavorite: isFavorite.trim().toUpperCase() === 'TRUE',
         rating: parseFloat(rating),
-        type: OfferType[type as keyof typeof OfferType],
+        type: OfferType[type[0].toUpperCase().concat(type.substring(1)) as keyof typeof OfferType],
         bedrooms: parseInt(bedrooms, 10),
         maxAdults: parseInt(maxAdults, 10),
         price: parseInt(price, 10),
-        goods: goods.split(';').map((good) => Goods[good as keyof typeof Goods]),
+        goods: goods.split(';').map((good) =>
+          Goods[good.split(' ').reduce((acc ,word) =>
+            acc.concat(word[0].toUpperCase().concat(word.substring(1)))) as keyof typeof Goods]),
         host: parseInt(host, 10),
         commentsCount: parseInt(commentsCount, 10),
-        location: {latitude: 0, longitude: 0}
-        // location: location.split().map(([latitude, longitude]) => ({
-        //   latitude: parseFloat(latitude),
-        //   longitude: parseFloat(longitude)
-        // })),
+        location: {latitude: parseFloat(latitude), longitude: parseFloat(longitude)}
       }));
   }
 }
