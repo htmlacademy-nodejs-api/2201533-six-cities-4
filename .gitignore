@@ -10,4 +10,5 @@
 coverage
 *.log
 
-exp.ts
+/temp/
+/temporary/
