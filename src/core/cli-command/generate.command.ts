@@ -1,5 +1,5 @@
 import got from 'got';
-import { appendFile, readFile, mkdir, open } from 'node:fs/promises';
+import { readFile, mkdir, open } from 'node:fs/promises';
 import { CliCommandInterface } from './cli-command.interface.js';
 import OfferGenerator from '../../modules/offer-generator/offer-generator.js';
 import {BIG_SIZE, DefaultConfig, Parameters} from '../cli-consts/consts.js';
@@ -7,6 +7,7 @@ import {GenerateConfig} from '../../types/generate-config.type.js';
 import path from 'node:path';
 import {existsSync, close, fstatSync} from 'node:fs';
 import {MockData, MockUsersData} from '../../types/mock-data.type.js';
+import TSVFileWriter from '../file-writer/tsv-file-writer.js';
 
 const getUserParams = (params: string[][]) => {
   const config: GenerateConfig = {} as GenerateConfig;
@@ -79,21 +80,19 @@ export default class GenerateCommand implements CliCommandInterface {
     try {
       let i = 0;
       let size = 0;
+      const tsvFileWriter = new TSVFileWriter(fileHandle);
       do {
-        await appendFile(fileHandle, `${offerGeneratorString.generate()}\n`, 'utf8');
+        await tsvFileWriter.write(offerGeneratorString.generate());
         i ++;
         size = fstatSync(fileHandle.fd).size;
         process.stdout.write(`${i}: ${size}\r`);
       } while (count > i || minSize > size);
-    } catch {
+    } catch(err) {
       if (fileHandle) {
         close(fileHandle.fd);
       }
-      console.log(`Can't write data to file: ${mockPath}.`);
+      console.log(`Can't write data to file: ${mockPath}.: ${err}`);
       return;
-    }
-    if (fileHandle) {
-      close(fileHandle.fd);
     }
     console.log(`File ${mockPath} was created!`);
   }

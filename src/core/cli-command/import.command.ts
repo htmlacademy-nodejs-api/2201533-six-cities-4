@@ -1,10 +1,20 @@
 import TSVFileReader from '../file-reader/tsv-file-reader.js';
 import { CliCommandInterface } from './cli-command.interface.js';
 import chalk from 'chalk';
+import {Offer} from '../../types/offer.type.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
-  public execute(filename: string): void {
+
+  private onLine(offer: Offer) {
+    console.log(offer.title);
+  }
+
+  private onComplete(count: number) {
+    console.log(`${count} rows imported.`);
+  }
+
+  public async execute(filename: string): Promise<void> {
     if (!filename){
       console.log(`
   ${chalk.redBright('после')} --import ${chalk.redBright('укажите путь к файлу')}
@@ -12,10 +22,11 @@ export default class ImportCommand implements CliCommandInterface {
       return;
     }
     const fileReader = new TSVFileReader(filename.trim());
-
+    fileReader.on('line', this.onLine);
+    fileReader.on('end', this.onComplete);
     try {
-      fileReader.read();
-      console.log(fileReader.toArray());
+      await fileReader.read();
+
     } catch (err) {
 
       if (!(err instanceof Error)) {

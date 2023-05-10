@@ -52,7 +52,7 @@ export default class OfferGenerator implements OfferGeneratorInterface {
     return [
       [title, description, date.toISOString(), city.name, previewImage, images.join(';'),
         BoolkinString.get(isPremium), BoolkinString.get(isFavorite), rating, type, bedrooms, maxAdults,
-        price, goods.join(';'), host, commentsCount, location.latitude, location.longitude]
-    ].join('\t');
+        price, goods.join(';'), host, commentsCount, location.latitude, location.longitude].join('\t')
+    ].join('\n');
   }
 }
