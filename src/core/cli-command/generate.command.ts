@@ -2,7 +2,7 @@ import got from 'got';
 import { readFile, mkdir, open } from 'node:fs/promises';
 import { CliCommandInterface } from './cli-command.interface.js';
 import OfferGenerator from '../../modules/offer-generator/offer-generator.js';
-import {BIG_SIZE, DefaultConfig, Parameters} from '../cli-consts/consts.js';
+import {BIG_SIZE, DEFAULT_CONFIG_PATH, DefaultConfig, Parameters} from '../cli-consts/consts.js';
 import {GenerateConfig} from '../../types/generate-config.type.js';
 import path from 'node:path';
 import {existsSync, close, fstatSync} from 'node:fs';
@@ -31,14 +31,16 @@ const parseParameters = async (parameters: string[]): Promise<GenerateConfig> =>
     }
     return param;
   });
-  const pathConfig = params.splice(params.findIndex((param) => param[0] === '-config'), 1)[0][1];
+  let pathConfig = params.splice(params.findIndex((param) =>
+    param[0] === '-config'), 1)[0][1];
+  pathConfig = pathConfig ? pathConfig : DEFAULT_CONFIG_PATH;
   const config: GenerateConfig = {} as GenerateConfig;
   Object.assign(config, DefaultConfig);
   if (pathConfig){
     try {
       Object.assign(config, JSON.parse(await readFile(pathConfig, { encoding: 'utf8' })));
-    } catch {
-      console.error(`Can't read config file from path: ${pathConfig}`);
+    } catch (err){
+      console.error(`Can't read config file from path: ${pathConfig}: ${err}`);
     }
   }
   Object.assign(config, getUserParams(params));

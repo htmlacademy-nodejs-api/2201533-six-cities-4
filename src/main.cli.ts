@@ -5,11 +5,12 @@ import VersionCommand from './core/cli-command/version.command.js';
 import ImportCommand from './core/cli-command/import.command.js';
 import StealDataCommand from './core/cli-command/steal-data.command.js';
 import GenerateCommand from './core/cli-command/generate.command.js';
+import FormatCommand from './core/cli-command/format.command.js';
 
 const myManager = new CLIApplication();
 myManager.registerCommands([
   new HelpCommand, new VersionCommand,
   new ImportCommand, new StealDataCommand,
-  new GenerateCommand
+  new GenerateCommand, new FormatCommand
 ]);
 myManager.processCommand(process.argv);

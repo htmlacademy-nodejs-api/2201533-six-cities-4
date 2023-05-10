@@ -4,6 +4,6 @@
   "usersEnd": "userApi",
   "count": 5,
   "mockPath": "./temporary/mock-data.tsv",
-  "isCreatePath": false,
+  "isCreatePath": true,
   "isCreateBig": true
 }

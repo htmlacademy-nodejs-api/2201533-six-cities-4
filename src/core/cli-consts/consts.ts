@@ -7,13 +7,14 @@ export const UNIT_DURATION = 'day';
 
 export const BIG_SIZE = 2 ** 31;
 
+export const DEFAULT_CONFIG_PATH = './src/core/cli-consts/generate.config.json';
 export const DefaultConfig: GenerateConfig = {
   jsonURL: 'http://localhost:3123',
   offersEnd: 'offerApi',
   usersEnd: 'userApi',
   count: 10,
   mockPath: './temp/mock-data.tsv',
-  isCreatePath: true,
+  isCreatePath: false,
   isCreateBig: false
 };
 
