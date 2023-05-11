@@ -8,6 +8,7 @@ import path from 'node:path';
 import {existsSync, close, fstatSync} from 'node:fs';
 import {MockData, MockUsersData} from '../../types/mock-data.type.js';
 import TSVFileWriter from '../file-writer/tsv-file-writer.js';
+import {formatInt} from '../helpers/format-int.js';
 
 const getUserParams = (params: string[][]) => {
   const config: GenerateConfig = {} as GenerateConfig;
@@ -87,7 +88,7 @@ export default class GenerateCommand implements CliCommandInterface {
         await tsvFileWriter.write(offerGeneratorString.generate());
         i ++;
         size = fstatSync(fileHandle.fd).size;
-        process.stdout.write(`${i}: ${size}\r`);
+        process.stdout.write(`${formatInt(i)}: ${formatInt(size)}\r`);
       } while (count > i || minSize > size);
     } catch(err) {
       if (fileHandle) {
