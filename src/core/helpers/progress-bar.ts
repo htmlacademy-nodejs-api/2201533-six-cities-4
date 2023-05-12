@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk from 'chalk';
 
 const FRACTIONS_COUNT = 8;
 const FULL_STEP = String.fromCharCode(9608);
