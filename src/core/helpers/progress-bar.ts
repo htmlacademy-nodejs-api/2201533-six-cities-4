@@ -1,3 +1,5 @@
+import chalk from "chalk";
+
 const FRACTIONS_COUNT = 8;
 const FULL_STEP = String.fromCharCode(9608);
 const FRACTIONS = [
@@ -11,6 +13,8 @@ const FRACTIONS = [
   String.fromCharCode(9609),
   String.fromCharCode(9608)
 ];
+const LEFT_BRACKET = String.fromCharCode(12310);
+const RIGHT_BRACKET = String.fromCharCode(12311);
 const DEFAULT_WIDTH = 10;
 const MAX_WIDTH = 50;
 
@@ -33,7 +37,7 @@ export class ProgressBar {
   public getProgress (value: number) {
     const progress = value > this.max ? this.max : value;
     const stepsCount = Math.floor(progress / this.step);
-    return Array.from(this.emptyProgress, ((element, index) => {
+    return `${LEFT_BRACKET}${chalk.cyan(Array.from(this.emptyProgress, ((element, index) => {
       if (index < stepsCount) {
         return FULL_STEP;
       }
@@ -41,6 +45,6 @@ export class ProgressBar {
         return FRACTIONS[Math.round((progress - stepsCount * this.step) / this.littleStep)];
       }
       return element;
-    })).join('');
+    })).join(''))}${RIGHT_BRACKET}`;
   }
 }

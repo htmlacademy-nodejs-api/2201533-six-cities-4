@@ -3,23 +3,26 @@ import { CliCommandInterface } from './cli-command.interface.js';
 import chalk from 'chalk';
 import {Offer} from '../../types/offer.type.js';
 import {FileHandle, open} from 'node:fs/promises';
-import {createProgressImport} from "../helpers/import-comand.helper";
-import {fstatSync} from "fs";
+import {createProgressImport, ImportProgressType} from '../helpers/import-comand.helper.js';
+import {fstatSync} from 'node:fs';
+import {stdout as output} from 'node:process';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
-
-  private onLine(offer: Offer) {
-    console.log(offer.title);
-  }
+  private progress: ImportProgressType | undefined;
+  private loaded = 10;
+  private onLine = (offer: Offer, rowNumber: number) => {
+    this.progress?.row(offer.title, rowNumber);
+  };
 
   private onComplete(count: number) {
     console.log(`${count} rows imported.`);
   }
 
-  private onRead(chunkSize: number) {
-
-  }
+  private onRead = (chunkSize: number) => {
+    // this.loaded += chunkSize;
+    this.progress?.loaded(this.loaded += chunkSize);
+  };
 
   public async execute(filename: string): Promise<void> {
     if (!filename){
@@ -35,11 +38,13 @@ export default class ImportCommand implements CliCommandInterface {
       console.log(`Can't open file: ${filename}`);
       return;
     }
-    const progress = createProgressImport(fstatSync(fileHandle.fd).size);
+    this.progress = createProgressImport(fstatSync(fileHandle.fd).size);
     const fileReader = new TSVFileReader(fileHandle);
     fileReader.on('line', this.onLine);
     fileReader.on('end', this.onComplete);
     fileReader.on('read', this.onRead);
+    output.write('\u001B[?25l');
+    console.log(chalk.greenBright(`Импорт строк предложений из ${filename}`));
     try {
       await fileReader.read();
 
@@ -50,6 +55,9 @@ export default class ImportCommand implements CliCommandInterface {
       }
 
       console.log(`Не удалось импортировать данные из файла по причине: «${err.message}»`);
+    } finally {
+      output.write('\u001B[?25h');
+      await fileHandle.close();
     }
   }
 }

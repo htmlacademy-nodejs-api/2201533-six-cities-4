@@ -6,9 +6,6 @@ import {stdout as output} from 'node:process';
 import {formatInt} from './format-int.js';
 import chalk from 'chalk';
 
-const LEFT_BRACKET = String.fromCharCode(12310);
-const RIGHT_BRACKET = String.fromCharCode(12311);
-
 export const getUserParams = (params: string[][]) => {
   const config: GenerateConfig = {} as GenerateConfig;
   params.forEach((param) => {
@@ -53,15 +50,13 @@ export function createProgressGenerate (isCreateBig: boolean, count: number) {
   const revertRowsCount = isCreateBig ? -2 : -1;
   const progressSize = isCreateBig ? new ProgressBar(BIG_SIZE, width) : null;
   return (row: number, size: number) => {
-    if (row > 0) {
+    if (row > 1) {
       output.moveCursor(0, revertRowsCount);
     }
-    console.log(` ${LEFT_BRACKET}${chalk.cyan(
-      progressCount.getProgress(row))}${RIGHT_BRACKET}${chalk.blue(
+    console.log(` ${progressCount.getProgress(row)}${chalk.blue(
       `Строка ${formatInt(row)} из ${formatInt(count as number)}`)}`);
     if (isCreateBig){
-      console.log(` ${LEFT_BRACKET}${chalk.cyan(
-        progressSize?.getProgress(size))}${RIGHT_BRACKET}${chalk.blue(
+      console.log(` ${progressSize?.getProgress(size)}${chalk.blue(
         `Записано ${formatInt(size)} байт из ${formatInt(BIG_SIZE)}`)}`);
     }
   };

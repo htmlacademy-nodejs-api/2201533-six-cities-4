@@ -1,24 +1,39 @@
-import {ProgressBar} from "./progress-bar";
-import {BIG_SIZE} from "../cli-consts/consts";
-import {stdout as output} from "process";
-import chalk from "chalk";
-import {formatInt} from "./format-int";
+import {ProgressBar} from './progress-bar.js';
+import {stdout as output} from 'node:process';
+import chalk from 'chalk';
+import {formatInt} from './format-int.js';
 
-export function createProgressImport (size: number) {
-  const width = 30;
-  const progress = new ProgressBar(size, width);
-  const revertRowsCount = -2;
-  return (row: number, size: number) => {
-    if (row > 0) {
-      output.moveCursor(0, revertRowsCount);
+export type ImportProgressType = {
+  row: (rowTitle: string, rowCount: number) => void;
+  loaded: (loaded: number) => void;
+}
+
+const WIDTH = 30;
+const REVERT_ROWS_COUNT = -2;
+export function createProgressImport (size: number): ImportProgressType {
+  const progress = new ProgressBar(size, WIDTH);
+  let title = '';
+  let rowNumber = 0;
+  let bar = '';
+  let byteCount = 0;
+  const outputProgress = () => {
+    if (rowNumber > 0) {
+      output.moveCursor(0, REVERT_ROWS_COUNT);
     }
-    console.log(` ${LEFT_BRACKET}${chalk.cyan(
-      progressCount.getProgress(row))}${RIGHT_BRACKET}${chalk.blue(
-      `Строка ${formatInt(row)} из ${formatInt(count as number)}`)}`);
-    if (isCreateBig){
-      console.log(` ${LEFT_BRACKET}${chalk.cyan(
-        progressSize?.getProgress(size))}${RIGHT_BRACKET}${chalk.blue(
-        `Записано ${formatInt(size)} байт из ${formatInt(BIG_SIZE)}`)}`);
-    }
+    output.write(chalk.blue(`Строка № ${formatInt(rowNumber)}. Предложение: ${title}.`));
+    output.clearLine(1);
+    output.write('\n');
+    console.log(`${bar} Загружено: ${byteCount} байт из ${size}`);
   };
+  const setRow = (rowTitle: string, rowCount: number) => {
+    title = rowTitle;
+    rowNumber = rowCount;
+    outputProgress();
+  };
+  const setLoaded = (loaded: number) => {
+    byteCount = loaded;
+    bar = progress.getProgress(loaded);
+    outputProgress();
+  };
+  return ({row: setRow, loaded: setLoaded});
 }

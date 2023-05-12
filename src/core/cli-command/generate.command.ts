@@ -8,7 +8,7 @@ import {existsSync, close, fstatSync} from 'node:fs';
 import {MockData, MockUsersData} from '../../types/mock-data.type.js';
 import TSVFileWriter from '../file-writer/tsv-file-writer.js';
 import { stdout as output } from 'node:process';
-import {createProgress, parseParameters} from '../helpers/generate-command.helpers.js';
+import {createProgressGenerate, parseParameters} from '../helpers/generate-command.helpers.js';
 import chalk from 'chalk';
 
 export default class GenerateCommand implements CliCommandInterface {
@@ -21,7 +21,7 @@ export default class GenerateCommand implements CliCommandInterface {
     const {jsonURL, usersEnd, offersEnd, count, isCreatePath, isCreateBig} = params;
     const mockPath: string = params.mockPath as string;
     const minSize = isCreateBig ? BIG_SIZE : 0;
-    const progress = createProgress(isCreateBig as boolean, count as number);
+    const progress = createProgressGenerate(isCreateBig as boolean, count as number);
     try {
       this.initialData = await got.get(`${jsonURL}/${offersEnd}`).json();
     } catch {
@@ -53,8 +53,8 @@ export default class GenerateCommand implements CliCommandInterface {
       do {
         await tsvFileWriter.write(offerGeneratorString.generate());
         size = fstatSync(fileHandle.fd).size;
-        progress(row, size);
         row ++;
+        progress(row, size);
       } while (count > row || minSize > size);
       output.write('\u001B[?25h');
     } catch(err) {
