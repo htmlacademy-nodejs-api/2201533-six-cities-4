@@ -1,52 +1,15 @@
 import got from 'got';
-import { readFile, mkdir, open } from 'node:fs/promises';
+import { mkdir, open } from 'node:fs/promises';
 import { CliCommandInterface } from './cli-command.interface.js';
 import OfferGenerator from '../../modules/offer-generator/offer-generator.js';
-import {BIG_SIZE, DEFAULT_CONFIG_PATH, DefaultConfig, Parameters} from '../cli-consts/consts.js';
-import {GenerateConfig} from '../../types/generate-config.type.js';
+import {BIG_SIZE} from '../cli-consts/consts.js';
 import path from 'node:path';
 import {existsSync, close, fstatSync} from 'node:fs';
 import {MockData, MockUsersData} from '../../types/mock-data.type.js';
 import TSVFileWriter from '../file-writer/tsv-file-writer.js';
-import {formatInt} from '../helpers/format-int.js';
-
-const getUserParams = (params: string[][]) => {
-  const config: GenerateConfig = {} as GenerateConfig;
-  params.forEach((param) => {
-    const key = Parameters[param[0].substring(1) as keyof typeof Parameters] as keyof GenerateConfig;
-    if (key.startsWith('is')) {
-      config[key] = true;
-    } else if (param[1]) {
-      config[key] = param[1];
-    }
-  });
-  return config;
-};
-
-const parseParameters = async (parameters: string[]): Promise<GenerateConfig> => {
-  const params = Array.from(parameters,(param, index) =>
-    ([param, parameters[index + 1]])).filter((param) =>
-    param[0].startsWith('-')).map((param) => {
-    if (!param[1] || param[1].startsWith('-')) {
-      param[1] = '';
-    }
-    return param;
-  });
-  let pathConfig = params.splice(params.findIndex((param) =>
-    param[0] === '-config'), 1)[0][1];
-  pathConfig = pathConfig ? pathConfig : DEFAULT_CONFIG_PATH;
-  const config: GenerateConfig = {} as GenerateConfig;
-  Object.assign(config, DefaultConfig);
-  if (pathConfig){
-    try {
-      Object.assign(config, JSON.parse(await readFile(pathConfig, { encoding: 'utf8' })));
-    } catch (err){
-      console.error(`Can't read config file from path: ${pathConfig}: ${err}`);
-    }
-  }
-  Object.assign(config, getUserParams(params));
-  return config;
-};
+import { stdout as output } from 'node:process';
+import {createProgress, parseParameters} from '../helpers/generate-command.helpers.js';
+import chalk from 'chalk';
 
 export default class GenerateCommand implements CliCommandInterface {
   public readonly name = '--generate';
@@ -57,6 +20,8 @@ export default class GenerateCommand implements CliCommandInterface {
     const params = await parseParameters(parameters);
     const {jsonURL, usersEnd, offersEnd, count, isCreatePath, isCreateBig} = params;
     const mockPath: string = params.mockPath as string;
+    const minSize = isCreateBig ? BIG_SIZE : 0;
+    const progress = createProgress(isCreateBig as boolean, count as number);
     try {
       this.initialData = await got.get(`${jsonURL}/${offersEnd}`).json();
     } catch {
@@ -79,21 +44,24 @@ export default class GenerateCommand implements CliCommandInterface {
       }
     }
     const fileHandle = await open(mockPath, 'w');
-    const minSize = isCreateBig ? BIG_SIZE : 0;
     try {
-      let i = 0;
+      let row = 0;
       let size = 0;
       const tsvFileWriter = new TSVFileWriter(fileHandle);
+      console.log(chalk.greenBright('Создание строк фейковых данных и запись в файл ".tsv"'));
+      output.write('\u001B[?25l');
       do {
         await tsvFileWriter.write(offerGeneratorString.generate());
-        i ++;
         size = fstatSync(fileHandle.fd).size;
-        process.stdout.write(`${formatInt(i)}: ${formatInt(size)}\r`);
-      } while (count > i || minSize > size);
+        progress(row, size);
+        row ++;
+      } while (count > row || minSize > size);
+      output.write('\u001B[?25h');
     } catch(err) {
       if (fileHandle) {
         close(fileHandle.fd);
       }
+      output.write('\u001B[?25h');
       console.log(`Can't write data to file: ${mockPath}.: ${err}`);
       return;
     }

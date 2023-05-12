@@ -2,7 +2,7 @@
   "jsonURL": "http://localhost:3123",
   "offersEnd": "offerApi",
   "usersEnd": "userApi",
-  "count": 5,
+  "count": 50000,
   "mockPath": "./temporary/mock-data.tsv",
   "isCreatePath": true,
   "isCreateBig": true

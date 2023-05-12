@@ -1,20 +1,20 @@
 import EventEmitter from 'node:events';
-import {createReadStream} from 'node:fs';
 import { FileReaderInterface } from './file-reader.interface.js';
 import { Offer } from '../../types/offer.type.js';
 import {cities} from '../../types/cities.enum.js';
 import {Goods} from '../../types/goods.enum.js';
 import {OfferType} from '../../types/offer-type.enum.js';
+import {FileHandle} from 'node:fs/promises';
 
 const CHUNK_SIZE = 2 ** 10;
 
 export default class TSVFileReader extends EventEmitter implements FileReaderInterface {
-  constructor(public filename: string) {
+  constructor(public fileHandle: FileHandle) {
     super();
   }
 
   public async read(): Promise<void> {
-    const stream = createReadStream(this.filename, {
+    const stream = this.fileHandle.createReadStream({
       highWaterMark: CHUNK_SIZE,
       encoding: 'utf-8',
     });
@@ -24,6 +24,7 @@ export default class TSVFileReader extends EventEmitter implements FileReaderInt
 
     for await (const chunk of stream) {
       remainingData += chunk.toString();
+      this.emit('read', CHUNK_SIZE);
       const lastRowEnd = remainingData.lastIndexOf('\n');
       remainingData.slice(0, lastRowEnd).split('\n').forEach((row) => {
         importedRowCount ++;

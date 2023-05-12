@@ -1,4 +1,6 @@
+import {FileHandle} from 'node:fs/promises';
+
 export interface FileReaderInterface {
-  readonly filename: string;
+  readonly fileHandle: FileHandle;
   read(): void;
 }
