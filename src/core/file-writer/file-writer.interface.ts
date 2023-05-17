@@ -1,6 +1,6 @@
 import {FileHandle} from 'node:fs/promises';
 
-export interface FileReaderInterface {
+export interface FileWriterInterface {
   readonly fileHandle: FileHandle;
-  read(): void;
+  write(row: string): void;
 }

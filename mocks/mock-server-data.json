@@ -1,0 +1,85 @@
+{
+  "offerApi": {
+    "titles": [
+      "Wood and stone place",
+      "The house among olive ",
+      "Waterfront with extraordinary view",
+      "Loft Studio in the Central Area",
+      "Nice, cozy, warm big bed apartment",
+      "Canal View Prinsengracht",
+      "The Joshua Tree House",
+      "House in countryside",
+      "Perfectly located Castro",
+      "Tile House",
+      "Penthouse, 4-5 rooms + 5 balconies",
+      "Amazing and Extremely Central Flat",
+      "Beautiful & luxurious apartment at great location",
+      "The Pondhouse - A Magical Place"
+    ],
+    "descriptions": [
+      "Relax, rejuvenate and unplug in this ultimate rustic getaway experience in the country. In our beautiful screened Pondhouse, you can gaze at the stars and listen to the sounds of nature from your cozy warm bed.",
+      "Peaceful studio in the most wanted area in town. Quiet house Near of everything. Completely renovated. Lovely neighbourhood, lot of trendy shops, restaurants and bars in a walking distance.",
+      "I am happy to welcome you to my apartment in the city center! Three words: location, cosy and chic!",
+      "I rent out a very sunny and bright apartment only 7 minutes walking distance to the metro station. The apartment has a spacious living room with a kitchen, one bedroom and a bathroom with mit bath. A terrace can be used in summer.",
+      "Discover daily local life in city center, friendly neighborhood, clandestine casino, karaoke, old-style artisans, art gallery and artist studio downstairs.",
+      "This is a place for dreamers to reset, reflect, and create. Designed with a 'slow' pace in mind, our hope is that you enjoy every part of your stay; from making local coffee by drip in the morning, choosing the perfect record to put on as the sun sets.",
+      "Design interior in most sympathetic area! Complitely renovated, well-equipped, cosy studio in idyllic, over 100 years old wooden house. Calm street, fast connection to center and airport.",
+      "A new spacious villa, one floor. All commodities, jacuzzi and beautiful scenery. Ideal for families or friends."
+    ],
+    "images": [
+      "https://12.react.pages.academy/static/hotel/8.jpg",
+      "https://12.react.pages.academy/static/hotel/5.jpg",
+      "https://12.react.pages.academy/static/hotel/19.jpg",
+      "https://12.react.pages.academy/static/hotel/13.jpg",
+      "https://12.react.pages.academy/static/hotel/3.jpg",
+      "https://12.react.pages.academy/static/hotel/9.jpg",
+      "https://12.react.pages.academy/static/hotel/10.jpg",
+      "https://12.react.pages.academy/static/hotel/20.jpg",
+      "https://12.react.pages.academy/static/hotel/6.jpg",
+      "https://12.react.pages.academy/static/hotel/11.jpg",
+      "https://12.react.pages.academy/static/hotel/15.jpg",
+      "https://12.react.pages.academy/static/hotel/4.jpg",
+      "https://12.react.pages.academy/static/hotel/16.jpg",
+      "https://12.react.pages.academy/static/hotel/14.jpg",
+      "https://12.react.pages.academy/static/hotel/2.jpg",
+      "https://12.react.pages.academy/static/hotel/12.jpg",
+      "https://12.react.pages.academy/static/hotel/17.jpg",
+      "https://12.react.pages.academy/static/hotel/7.jpg",
+      "https://12.react.pages.academy/static/hotel/1.jpg",
+      "https://12.react.pages.academy/static/hotel/18.jpg"
+    ]
+  },
+  "userApi": {
+    "users": [
+      "Иван Иванов",
+      "Олег Сидоров",
+      "Пьер Безухов",
+      "Роланд Дискейн",
+      "Холи Гибни",
+      "Джек Торренс",
+      "Антон Городецкий",
+      "Борис Гесер",
+      "Рокки Бальбоа",
+      "Джон Смит"
+    ],
+    "emails": [
+      "snow@pisem.local",
+      "president@dka.local",
+      "fish@big.local",
+      "test@pisem.local",
+      "freedom@pisem.local",
+      "rolan@pochta.local",
+      "author@mir.local",
+      "test@lost.loca",
+      "kujo-fan@story.local"
+    ],
+    "avatars": [
+      "user.jpg",
+      "photo.jpg",
+      "awesome-avatar.jpg",
+      "roland.jpg",
+      "smite.jpg",
+      "coffee.jpg"
+    ]
+  }
+}

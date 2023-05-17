@@ -1,5 +1,5 @@
 import {City} from './city.type';
-import {Location} from './location.type';
+import {MapLocation} from './location.type';
 
 export type Offer = {
   title: string;
@@ -18,5 +18,5 @@ export type Offer = {
   goods: string[];
   host: number;
   commentsCount: number;
-  location: Location;
+  location: MapLocation;
 }
