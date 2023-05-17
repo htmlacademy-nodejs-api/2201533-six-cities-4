@@ -20,7 +20,6 @@ export default class ImportCommand implements CliCommandInterface {
   }
 
   private onRead = (chunkSize: number) => {
-    // this.loaded += chunkSize;
     this.progress?.loaded(this.loaded += chunkSize);
   };
 
