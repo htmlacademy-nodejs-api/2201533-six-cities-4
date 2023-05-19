@@ -9,6 +9,8 @@ export type RestSchema = {
   DB_PASSWORD: string;
   DB_PORT: string;
   DB_NAME: string;
+  RETRY_COUNT: number
+  RETRY_TIMEOUT: number
 }
 
 convict.addFormats(validator);
@@ -55,5 +57,17 @@ export const configRestSchema = convict<RestSchema>({
     format: String,
     env: 'DB_NAME',
     default: 'six-cities-mongo'
+  },
+  RETRY_COUNT: {
+    doc: 'Number of attempts to connect to the database',
+    format: Number,
+    env: 'DB_CONNECT_RETRY_COUNT',
+    default: 5
+  },
+  RETRY_TIMEOUT: {
+    doc: ' Шnterval between retries to connect to the database',
+    format: Number,
+    env: 'DB_CONNECT_RETRY_TIMEOUT',
+    default: 1000
   }
 });

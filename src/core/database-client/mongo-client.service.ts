@@ -3,6 +3,9 @@ import {inject, injectable} from 'inversify';
 import mongoose, {Mongoose} from 'mongoose';
 import {LoggerInterface} from '../logger/logger.interface.js';
 import {AppComponent} from '../../types/app-component.enum.js';
+import {setTimeout} from 'node:timers/promises';
+import {ConfigInterface} from '../config/config.interface.js';
+import {RestSchema} from '../config/rest.schema.js';
 
 @injectable()
 export default class MongoClientService implements DatabaseClientInterface {
@@ -10,11 +13,28 @@ export default class MongoClientService implements DatabaseClientInterface {
   private mongooseInstance: Mongoose | null = null;
 
   constructor(
-    @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface
+    @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
+    @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
   ) {}
 
+  private async _connectWithRetry(uri: string): Promise<Mongoose> {
+    let attempt = 0;
+    while (attempt < this.config.get('RETRY_COUNT')) {
+      try {
+        return await mongoose.connect(uri);
+      } catch (error) {
+        attempt++;
+        this.logger.error(`Failed to connect to the database. Attempt ${attempt}`);
+        await setTimeout(this.config.get('RETRY_TIMEOUT'));
+      }
+    }
+
+    this.logger.error(`Unable to establish database connection after ${attempt}`);
+    throw new Error('Failed to connect to the database');
+  }
+
   private async _connect(uri:string): Promise<void> {
-    this.mongooseInstance = await mongoose.connect(uri);
+    this.mongooseInstance = await this._connectWithRetry(uri);
     this.isConnected = true;
   }
 
