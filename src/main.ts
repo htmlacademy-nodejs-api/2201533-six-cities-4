@@ -7,8 +7,8 @@ import {AppComponent} from './types/app-component.enum.js';
 import {LoggerInterface} from './core/logger/logger.interface.js';
 import {ConfigInterface} from './core/config/config.interface.js';
 import {RestSchema} from './core/config/rest.schema.js';
-import {DatabaseClientInterface} from "./core/database-client/database-client.interface";
-import MongoClientService from "./core/database-client/database-client.service";
+import {DatabaseClientInterface} from './core/database-client/database-client.interface.js';
+import MongoClientService from './core/database-client/database-client.service.js';
 
 async function bootstrap() {
   const container = new Container();
