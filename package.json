@@ -21,7 +21,6 @@
   },
   "devDependencies": {
     "@faker-js/faker": "7.6.0",
-    "@typegoose/typegoose": "11.1.0",
     "@types/convict": "6.1.1",
     "@types/convict-format-with-validator": "6.0.2",
     "@types/node": "18.16.3",
@@ -41,6 +40,7 @@
     "npm": ">=8"
   },
   "dependencies": {
+    "@typegoose/typegoose": "11.1.0",
     "chalk": "5.2.0",
     "convict": "6.2.3",
     "convict-format-with-validator": "6.2.0",

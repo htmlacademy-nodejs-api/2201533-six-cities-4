@@ -1,9 +1,11 @@
-type TypeOfUser = 'pro' | 'simple';
+export enum UserType {
+  pro = 'pro',
+  simple = 'simple'
+}
 
-export type User = {
+export interface User {
   name: string;
   email: string;
   avatarPath: string;
-  password: string;
-  type: TypeOfUser;
-};
+  type: UserType;
+}
