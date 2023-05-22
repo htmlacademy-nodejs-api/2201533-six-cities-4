@@ -63,3 +63,6 @@ export const Parameters = {
   createpath: 'isCreatePath',
   big: 'isCreateBig'
 };
+
+export const BIGGEST_INT_SIZE = (2 ** 128).toString().length;
+export const EMPTY_BIGGEST_INT = new Array(BIGGEST_INT_SIZE).fill('*').join('');

@@ -5,6 +5,7 @@ import {inject, injectable} from 'inversify';
 import {AppComponent} from '../types/app-component.enum.js';
 import {DatabaseClientInterface} from '../core/database-client/database-client.interface.js';
 import {getMongoURI} from '../core/helpers/mongo-conection-string.js';
+import {fillCities} from '../core/helpers/fill-cities.js';
 
 @injectable()
 export default class RestApplication {
@@ -33,5 +34,7 @@ export default class RestApplication {
     this.logger.info('Init database…');
     await this._initDb();
     this.logger.info('Init database completed');
+    await fillCities();
+    this.logger.info('Cities added to base');
   }
 }

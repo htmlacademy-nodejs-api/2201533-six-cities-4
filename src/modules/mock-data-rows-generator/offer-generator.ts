@@ -1,4 +1,4 @@
-import { OfferGeneratorInterface } from './offer-generator.interface.js';
+import { DataGeneratorInterface } from './data-generator.interface.js';
 import {MockData} from '../../types/mock-data.type.js';
 import {
   generateRandomValue,
@@ -27,7 +27,7 @@ const getRandomizeParam = (key: string) =>
     Precision[key as keyof typeof Precision] || Precision.Default,
   ] as [number, number, number]);
 
-export default class OfferGenerator implements OfferGeneratorInterface {
+export default class OfferGenerator implements DataGeneratorInterface {
   constructor(private readonly mockData: MockData) {}
 
   public generate(): string {
@@ -45,7 +45,7 @@ export default class OfferGenerator implements OfferGeneratorInterface {
     const maxAdults = generateRandomValue(...getRandomizeParam(NumberFields.MaxAdults));
     const price = generateRandomValue(...getRandomizeParam(NumberFields.Price));
     const goods = getRandomItems(Object.values(Goods));
-    const host = generateRandomValue(0, this.mockData.emails.length);
+    const host = getRandomItem(this.mockData.emails);
     const commentsCount = generateRandomValue(...getRandomizeParam(NumberFields.CommentCount));
     const location = makeFakeLocation(city.location);
 

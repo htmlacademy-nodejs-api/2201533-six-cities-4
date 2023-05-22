@@ -1,23 +1,25 @@
 import {User, UserType} from '../../types/user.type.js';
-import {defaultClasses, getModelForClass, prop} from '@typegoose/typegoose';
+import {defaultClasses, getModelForClass, modelOptions, prop} from '@typegoose/typegoose';
 import {createSHA256} from '../../core/helpers/common.js';
+import {entitiesName} from '../../types/entities-name.enum.js';
 
 export interface UserEntity extends defaultClasses.Base {}
 
+@modelOptions({options: {customName: entitiesName.users}})
 export class UserEntity extends defaultClasses.TimeStamps implements User {
-  @prop({required: true})
+  @prop({required: true, type: String})
   public name = '';
 
-  @prop({required: true, unique: true})
+  @prop({required: true, unique: true, type: String})
   public email = '';
 
-  @prop({required: false, default: ''})
+  @prop({required: false, default: '', type: String})
   public avatarPath = '';
 
   @prop({required: true})
   private password?: string;
 
-  @prop({required: true, enum: UserType})
+  @prop({required: true, enum: UserType, type: String})
   public type = '' as unknown as UserType;
 
   constructor(userData: User) {
