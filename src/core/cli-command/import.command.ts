@@ -10,9 +10,11 @@ import {stdout as output} from 'node:process';
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
   private progress: ImportProgressType | undefined;
-  private loaded = 10;
+  private loaded = 0;
+  private userCount = 0;
+  private offerCount = 0;
   private onLine = (offer: Offer, rowNumber: number) => {
-    this.progress?.row(offer.title, rowNumber);
+    this.progress?.row(rowNumber);
   };
 
   private onComplete(count: number) {
@@ -37,22 +39,21 @@ export default class ImportCommand implements CliCommandInterface {
       console.log(`Can't open file: ${filename}`);
       return;
     }
-    this.progress = createProgressImport(fstatSync(fileHandle.fd).size);
     const fileReader = new TSVFileReader(fileHandle);
+
     fileReader.on('line', this.onLine);
     fileReader.on('end', this.onComplete);
     fileReader.on('read', this.onRead);
     output.write('\u001B[?25l');
     console.log(chalk.greenBright(`Импорт строк предложений из ${filename}`));
     try {
+      [this.userCount, this.offerCount] = await fileReader.getRowsCount();
+      this.progress = createProgressImport(fstatSync(fileHandle.fd).size, this.userCount + this.offerCount);
       await fileReader.read();
-
     } catch (err) {
-
       if (!(err instanceof Error)) {
         throw err;
       }
-
       console.log(`Не удалось импортировать данные из файла по причине: «${err.message}»`);
     } finally {
       output.write('\u001B[?25h');
