@@ -1,11 +1,11 @@
 import TSVFileReader from '../file-reader/tsv-file-reader.js';
 import { CliCommandInterface } from './cli-command.interface.js';
 import chalk from 'chalk';
-import {Offer} from '../../types/offer.type.js';
 import {FileHandle, open} from 'node:fs/promises';
 import {createProgressImport, ImportProgressType} from '../helpers/import-comand.helper.js';
 import {fstatSync} from 'node:fs';
 import {stdout as output} from 'node:process';
+import {createOffer} from '../helpers/offer.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -13,9 +13,35 @@ export default class ImportCommand implements CliCommandInterface {
   private loaded = 0;
   private userCount = 0;
   private offerCount = 0;
-  private onLine = (offer: Offer, rowNumber: number) => {
-    this.progress?.row(rowNumber);
-  };
+
+  private async saveUser(user: User) {
+
+  }
+
+  private async saveOffer(offer: Offer) {
+    const categories = [];
+    const user = await this.userService.findOrCreate({
+      ...offer.user,
+      password: DEFAULT_USER_PASSWORD
+    }, this.salt);
+
+    for (const {name} of offer.categories) {
+      const existCategory = await this.categoryService.findByCategoryNameOrCreate(name, {name});
+      categories.push(existCategory.id);
+    }
+
+    await this.offerService.create({
+      ...offer,
+      categories,
+      userId: user.id,
+    });
+  }
+
+  private async onLine(line: string, rowNumber: number, resolve: () => void) {
+    const offer = createOffer(line);
+    await this.saveOffer(offer);
+    resolve();
+  }
 
   private onComplete(count: number) {
     console.log(`${count} rows imported.`);

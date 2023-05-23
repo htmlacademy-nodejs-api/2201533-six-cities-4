@@ -25,13 +25,15 @@ export const NumberFields = {
   Price: 'Price',
   Duration: 'Duration',
   CommentCount: 'CommentCount',
+  PasswordLength: 'PasswordLength'
 };
 
 export const Min = {
   Price: 100,
   Duration: 0,
   CommentCount: 0,
-  Default: 1
+  Default: 1,
+  PasswordLength: 6
 };
 
 export const Max = {
@@ -41,7 +43,8 @@ export const Max = {
   Price: 100000,
   Duration: 180,
   CommentCount: 10,
-  Default: 100000
+  Default: 100000,
+  PasswordLength: 12
 };
 
 export const Precision = {

@@ -1,5 +1,6 @@
 import {faker} from '@faker-js/faker';
 import {MapLocation} from '../../types/location.type.js';
+import {Max, Min, NumberFields, Precision} from "../cli-consts/consts";
 
 export function generateRandomValue(min:number, max: number, precision = 0) {
   return +((Math.random() * (max - min)) + min).toFixed(precision);
@@ -31,3 +32,25 @@ export const makeFakeLocation = (loc: MapLocation): MapLocation => {
     latitude: parseFloat(coordinates[0]),
   };
 };
+
+export const getRandomizeParam = (key: string) =>
+  ([
+    Min[key as keyof typeof Min] || Min.Default,
+    Max[key as keyof typeof Max] || Max.Default,
+    Precision[key as keyof typeof Precision] || Precision.Default,
+  ] as [number, number, number]);
+
+export function getRandomSymbol() {
+  return String.fromCharCode(generateRandomValue(32, 126, 0));
+}
+
+const exclamation = 32;
+const tilda = 126;
+export function getRandomSymbols(count: number) {
+  const symbols = new Array(tilda - exclamation).map((_, index) => index + exclamation);
+  return getRandomItems(symbols, count);
+}
+
+export function generatePassword() {
+  return getRandomSymbols(generateRandomValue(...getRandomizeParam(NumberFields.PasswordLength)));
+}

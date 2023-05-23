@@ -24,10 +24,12 @@ export default class TSVFileReader extends EventEmitter implements FileReaderInt
       remainingData += chunk.toString();
       this.emit('read', CHUNK_SIZE);
       const lastRowEnd = remainingData.lastIndexOf('\n');
-      remainingData.slice(0, lastRowEnd).split('\n').forEach((row) => {
+      for (const row of remainingData.slice(0, lastRowEnd).split('\n')) {
         importedRowCount ++;
-        this.emit('line', this.createOffer(row), importedRowCount);
-      });
+        await new Promise((resolve) => {
+          this.emit('line', row, importedRowCount, resolve);
+        });
+      }
       remainingData = remainingData.slice(lastRowEnd + 1);
     }
 
