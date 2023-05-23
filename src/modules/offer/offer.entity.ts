@@ -1,10 +1,11 @@
-import {defaultClasses, modelOptions, prop, Ref} from '@typegoose/typegoose';
+import {defaultClasses, getModelForClass, modelOptions, prop, Ref} from '@typegoose/typegoose';
 import {entitiesName} from '../../types/entities-name.enum.js';
 import {OfferType} from '../../types/offer-type.enum.js';
 import {Goods} from '../../types/goods.enum.js';
 import {CityEntity} from '../city/city.entity.js';
 import {UserEntity} from '../user/user.entity.js';
 import {LocationEntity} from '../location/location-entity.js';
+import {Offer} from '../../types/offer.type.js';
 
 export interface OfferEntity extends defaultClasses.Base {}
 
@@ -61,4 +62,27 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true, _id: false})
   public location!: LocationEntity;
 
+  constructor(offer: Offer) {
+    super();
+    this.title = offer.title;
+    this.description = offer.description;
+    this.date = offer.date;
+  this.city!: Ref<CityEntity>;
+  this.previewImage!: string;
+  this.images!: string[];
+  this.isPremium!: boolean;
+  this.isFavorite!: boolean;
+  this.rating!: number;
+  this.type!: OfferType;
+ this.bedrooms!: number;
+  this.maxAdults!: number;
+  this.price!: number;
+  this.goods!: Goods[];
+  this.host!: Ref<UserEntity>;
+  this.commentsCount!: number;
+  this.location!: LocationEntity;
+
+  }
 }
+
+export const OfferModel = getModelForClass(OfferEntity);

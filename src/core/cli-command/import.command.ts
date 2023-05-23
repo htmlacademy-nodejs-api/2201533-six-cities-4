@@ -6,6 +6,17 @@ import {createProgressImport, ImportProgressType} from '../helpers/import-comand
 import {fstatSync} from 'node:fs';
 import {stdout as output} from 'node:process';
 import {createOffer} from '../helpers/offer.js';
+import CreateUserDto from '../../modules/user/dto/create-user.dto.js';
+import {UserServiceInterface} from '../../modules/user/user-service.interface.js';
+import {LoggerInterface} from '../logger/logger.interface.js';
+import {ConfigInterface} from '../config/config.interface.js';
+import {RestSchema} from '../config/rest.schema.js';
+import ConsoleLoggerService from '../logger/console.service.js';
+import ConfigService from '../config/config.service.js';
+import UserService from '../../modules/user/user.service.js';
+import {UserModel} from '../../modules/user/user.entity.js';
+import {createUser} from "../helpers/user";
+import {Offer} from "../../types/offer.type";
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -13,9 +24,21 @@ export default class ImportCommand implements CliCommandInterface {
   private loaded = 0;
   private userCount = 0;
   private offerCount = 0;
+  private readonly salt: string = '';
+  private readonly logger: LoggerInterface;
+  private config: ConfigInterface<RestSchema>;
+  private userService: UserServiceInterface;
+  // private offerService: O
 
-  private async saveUser(user: User) {
+  constructor() {
+    this.logger = new ConsoleLoggerService();
+    this.config = new ConfigService(this.logger);
+    this.salt = this.config.get('SALT');
+    this.userService = new UserService(this.logger, UserModel);
+  }
 
+  private async saveUser(user: CreateUserDto) {
+    await this.userService.findOrCreate(user, this.salt);
   }
 
   private async saveOffer(offer: Offer) {
@@ -38,9 +61,13 @@ export default class ImportCommand implements CliCommandInterface {
   }
 
   private async onLine(line: string, rowNumber: number, resolve: () => void) {
-    const offer = createOffer(line);
-    await this.saveOffer(offer);
-    resolve();
+    if (rowNumber > this.userCount) {
+      await this.saveOffer(createOffer(line));
+      resolve();
+    } else {
+      await this.saveUser(createUser(line));
+      resolve();
+    }
   }
 
   private onComplete(count: number) {
