@@ -15,8 +15,14 @@ import ConsoleLoggerService from '../logger/console.service.js';
 import ConfigService from '../config/config.service.js';
 import UserService from '../../modules/user/user.service.js';
 import {UserModel} from '../../modules/user/user.entity.js';
-import {createUser} from "../helpers/user";
-import {Offer} from "../../types/offer.type";
+import {createUser} from '../helpers/user.js';
+import {Offer} from '../../types/offer.type.js';
+import {OfferServiceInterface} from '../../modules/offer/offer-service.interface.js';
+import OfferService from '../../modules/offer/offer.service.js';
+import {OfferModel} from '../../modules/offer/offer.entity.js';
+import {CityServiceInterface} from '../../modules/city/city-service.interface.js';
+import CityService from '../../modules/city/city.service.js';
+import {CityModel} from '../../modules/city/city.entity.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -28,13 +34,16 @@ export default class ImportCommand implements CliCommandInterface {
   private readonly logger: LoggerInterface;
   private config: ConfigInterface<RestSchema>;
   private userService: UserServiceInterface;
-  // private offerService: O
+  private offerService: OfferServiceInterface;
+  private cityService: CityServiceInterface;
 
   constructor() {
     this.logger = new ConsoleLoggerService();
     this.config = new ConfigService(this.logger);
     this.salt = this.config.get('SALT');
     this.userService = new UserService(this.logger, UserModel);
+    this.offerService = new OfferService(this.logger, OfferModel);
+    this.cityService = new CityService(this.logger, CityModel);
   }
 
   private async saveUser(user: CreateUserDto) {
@@ -42,21 +51,16 @@ export default class ImportCommand implements CliCommandInterface {
   }
 
   private async saveOffer(offer: Offer) {
-    const categories = [];
-    const user = await this.userService.findOrCreate({
-      ...offer.user,
-      password: DEFAULT_USER_PASSWORD
-    }, this.salt);
+    const user = await this.userService.findByEmail(offer.host);
+    const city = await this.cityService.findByName(offer.city.name);
 
-    for (const {name} of offer.categories) {
-      const existCategory = await this.categoryService.findByCategoryNameOrCreate(name, {name});
-      categories.push(existCategory.id);
+    if (!user || !city) {
+      return;
     }
-
     await this.offerService.create({
       ...offer,
-      categories,
-      userId: user.id,
+      host: user.id,
+      city: city.id,
     });
   }
 

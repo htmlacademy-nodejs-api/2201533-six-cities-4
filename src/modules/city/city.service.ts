@@ -26,4 +26,8 @@ export default class CityService implements CityServiceInterface {
   public async getCount(): Promise<number> {
     return this.cityModel.find().estimatedDocumentCount();
   }
+
+  public async findByName(name:string): Promise<DocumentType<CityEntity> | null> {
+    return this.cityModel.findOne({name});
+  }
 }
