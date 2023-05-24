@@ -23,6 +23,9 @@ import {CityServiceInterface} from '../../modules/city/city-service.interface.js
 import CityService from '../../modules/city/city.service.js';
 import {CityModel} from '../../modules/city/city.entity.js';
 import ImportLoggerService from '../logger/import-logger.service.js';
+import {DatabaseClientInterface} from '../database-client/database-client.interface.js';
+import MongoClientService from '../database-client/mongo-client.service.js';
+import {getMongoURI} from '../helpers/mongo-conection-string.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -32,10 +35,11 @@ export default class ImportCommand implements CliCommandInterface {
   private offerCount = 0;
   private readonly salt: string = '';
   private readonly logger: LoggerInterface;
-  private config: ConfigInterface<RestSchema>;
+  private readonly config: ConfigInterface<RestSchema>;
   private userService: UserServiceInterface;
   private offerService: OfferServiceInterface;
   private cityService: CityServiceInterface;
+  private databaseService!: DatabaseClientInterface;
 
   constructor() {
     this.progress = createProgressImport();
@@ -45,6 +49,7 @@ export default class ImportCommand implements CliCommandInterface {
     this.userService = new UserService(this.logger, UserModel);
     this.offerService = new OfferService(this.logger, OfferModel);
     this.cityService = new CityService(this.logger, CityModel);
+    this.databaseService = new MongoClientService(this.logger, this.config);
   }
 
   private async saveUser(user: CreateUserDto) {
@@ -77,6 +82,7 @@ export default class ImportCommand implements CliCommandInterface {
 
   private onComplete(count: number) {
     console.log(`${count} rows imported.`);
+    this.databaseService.disconnect();
   }
 
   private onRead = (chunkSize: number) => {
@@ -98,7 +104,13 @@ export default class ImportCommand implements CliCommandInterface {
       return;
     }
     const fileReader = new TSVFileReader(fileHandle);
-
+    await this.databaseService.connect(getMongoURI(
+      this.config.get('DB_USER'),
+      this.config.get('DB_PASSWORD'),
+      this.config.get('DB_HOST'),
+      this.config.get('DB_PORT'),
+      this.config.get('DB_NAME'),
+    ));
     fileReader.on('line', this.onLine);
     fileReader.on('end', this.onComplete);
     fileReader.on('read', this.onRead);
@@ -116,6 +128,7 @@ export default class ImportCommand implements CliCommandInterface {
     } finally {
       output.write('\u001B[?25h');
       await fileHandle.close();
+      await this.databaseService.disconnect();
     }
   }
 }

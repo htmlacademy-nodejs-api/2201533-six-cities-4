@@ -1,6 +1,6 @@
 import {faker} from '@faker-js/faker';
 import {MapLocation} from '../../types/location.type.js';
-import {Max, Min, NumberFields, Precision} from "../cli-consts/consts";
+import {Max, Min, NumberFields, Precision} from '../cli-consts/consts.js';
 
 export function generateRandomValue(min:number, max: number, precision = 0) {
   return +((Math.random() * (max - min)) + min).toFixed(precision);
