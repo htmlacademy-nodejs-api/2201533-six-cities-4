@@ -47,10 +47,11 @@ export function getRandomSymbol() {
 const exclamation = 32;
 const tilda = 126;
 export function getRandomSymbols(count: number) {
-  const symbols = new Array(tilda - exclamation).map((_, index) => index + exclamation);
+  const symbols = Array.from(new Array(tilda - exclamation), (_, index) =>
+    String.fromCharCode(index + exclamation));
   return getRandomItems(symbols, count);
 }
 
 export function generatePassword() {
-  return getRandomSymbols(generateRandomValue(...getRandomizeParam(NumberFields.PasswordLength)));
+  return getRandomSymbols(generateRandomValue(...getRandomizeParam(NumberFields.PasswordLength))).join('');
 }

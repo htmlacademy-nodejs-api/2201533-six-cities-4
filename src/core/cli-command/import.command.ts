@@ -9,9 +9,7 @@ import {createOffer} from '../helpers/offer.js';
 import CreateUserDto from '../../modules/user/dto/create-user.dto.js';
 import {UserServiceInterface} from '../../modules/user/user-service.interface.js';
 import {LoggerInterface} from '../logger/logger.interface.js';
-import {ConfigInterface} from '../config/config.interface.js';
-import {RestSchema} from '../config/rest.schema.js';
-import ConfigService from '../config/config.service.js';
+import {config, DotenvParseOutput} from 'dotenv';
 import UserService from '../../modules/user/user.service.js';
 import {UserModel} from '../../modules/user/user.entity.js';
 import {createUser} from '../helpers/user.js';
@@ -26,6 +24,8 @@ import ImportLoggerService from '../logger/import-logger.service.js';
 import {DatabaseClientInterface} from '../database-client/database-client.interface.js';
 import MongoClientService from '../database-client/mongo-client.service.js';
 import {getMongoURI} from '../helpers/mongo-conection-string.js';
+import {cities} from '../../types/cities.enum.js';
+import ConsoleLoggerService from '../logger/console.service.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -35,7 +35,7 @@ export default class ImportCommand implements CliCommandInterface {
   private offerCount = 0;
   private readonly salt: string = '';
   private readonly logger: LoggerInterface;
-  private readonly config: ConfigInterface<RestSchema>;
+  private readonly config!: DotenvParseOutput;
   private userService: UserServiceInterface;
   private offerService: OfferServiceInterface;
   private cityService: CityServiceInterface;
@@ -44,12 +44,26 @@ export default class ImportCommand implements CliCommandInterface {
   constructor() {
     this.progress = createProgressImport();
     this.logger = new ImportLoggerService(this.progress.message);
-    this.config = new ConfigService(this.logger);
-    this.salt = this.config.get('SALT');
+    this.config = config().parsed as DotenvParseOutput;
+    this.salt = this.config['SALT'];
     this.userService = new UserService(this.logger, UserModel);
     this.offerService = new OfferService(this.logger, OfferModel);
     this.cityService = new CityService(this.logger, CityModel);
-    this.databaseService = new MongoClientService(this.logger, this.config);
+    this.databaseService = new MongoClientService(
+      new ConsoleLoggerService(),
+      parseInt(this.config['DB_CONNECT_RETRY_COUNT'], 10),
+      parseInt(this.config['B_CONNECT_RETRY_TIMEOUT'], 10)
+    );
+  }
+
+  private async fillCities() {
+    const cityValues = Object.values(cities);
+    if (await this.cityService.getCount() === cityValues.length) {
+      return;
+    }
+    for (const city of cityValues) {
+      await this.cityService.create(city);
+    }
   }
 
   private async saveUser(user: CreateUserDto) {
@@ -70,20 +84,22 @@ export default class ImportCommand implements CliCommandInterface {
     });
   }
 
-  private async onLine(line: string, rowNumber: number, resolve: () => void) {
+  private onLine = async (line: string, rowNumber: number, resolve: () => void) => {
     if (rowNumber > this.userCount) {
       await this.saveOffer(createOffer(line));
       resolve();
     } else {
-      await this.saveUser(createUser(line));
+      const user = createUser(line);
+      await this.saveUser(user);
       resolve();
     }
-  }
+    this.progress?.row(rowNumber);
+  };
 
-  private onComplete(count: number) {
-    console.log(`${count} rows imported.`);
+  private onComplete = (count: number) => {
     this.databaseService.disconnect();
-  }
+    console.log(`${count} rows imported.`);
+  };
 
   private onRead = (chunkSize: number) => {
     this.progress?.loaded(this.loaded += chunkSize);
@@ -104,19 +120,21 @@ export default class ImportCommand implements CliCommandInterface {
       return;
     }
     const fileReader = new TSVFileReader(fileHandle);
-    await this.databaseService.connect(getMongoURI(
-      this.config.get('DB_USER'),
-      this.config.get('DB_PASSWORD'),
-      this.config.get('DB_HOST'),
-      this.config.get('DB_PORT'),
-      this.config.get('DB_NAME'),
-    ));
+    const uri = getMongoURI(
+      this.config['DB_USER'],
+      this.config['DB_PASSWORD'],
+      this.config['DB_HOST'],
+      this.config['DB_PORT'],
+      this.config['DB_NAME'],
+    );
+    await this.databaseService.connect(uri);
     fileReader.on('line', this.onLine);
     fileReader.on('end', this.onComplete);
     fileReader.on('read', this.onRead);
     output.write('\u001B[?25l');
     console.log(chalk.greenBright(`Импорт строк предложений из ${filename}`));
     try {
+      await this.fillCities();
       [this.userCount, this.offerCount] = await fileReader.getRowsCount();
       this.progress?.param(fstatSync(fileHandle.fd).size, this.userCount + this.offerCount);
       await fileReader.read();

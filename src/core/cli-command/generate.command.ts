@@ -2,7 +2,7 @@ import got from 'got';
 import { mkdir, open } from 'node:fs/promises';
 import { CliCommandInterface } from './cli-command.interface.js';
 import OfferGenerator from '../../modules/mock-data-rows-generator/offer-generator.js';
-import {BIG_SIZE, BUFFER_SIZE, EMPTY_BIGGEST_INT} from '../cli-consts/consts.js';
+import {BIG_SIZE, BIGGEST_INT_SIZE, BUFFER_SIZE, EMPTY_BIGGEST_INT} from '../cli-consts/consts.js';
 import path from 'node:path';
 import {existsSync, close, fstatSync} from 'node:fs';
 import {MockData, MockUsersData} from '../../types/mock-data.type.js';
@@ -63,9 +63,9 @@ export default class GenerateCommand implements CliCommandInterface {
         row ++;
         progress(row, size);
       } while (count > row || minSize > size);
-      // await fileHandle.write(
-      //   `${i.toString().padStart(BIGGEST_INT_SIZE, ' ')}\t${row.toString().padStart(BIGGEST_INT_SIZE, ' ')}`,
-      //   0, 'utf-8');
+      await fileHandle.write(
+        `${i.toString().padStart(BIGGEST_INT_SIZE, ' ')}\t${row.toString().padStart(BIGGEST_INT_SIZE, ' ')}`,
+        0, 'utf-8');
       output.write('\u001B[?25h');
     } catch(err) {
       if (fileHandle) {

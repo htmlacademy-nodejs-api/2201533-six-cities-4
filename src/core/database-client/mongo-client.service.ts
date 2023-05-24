@@ -4,8 +4,6 @@ import mongoose, {Mongoose} from 'mongoose';
 import {LoggerInterface} from '../logger/logger.interface.js';
 import {AppComponent} from '../../types/app-component.enum.js';
 import {setTimeout} from 'node:timers/promises';
-import {ConfigInterface} from '../config/config.interface.js';
-import {RestSchema} from '../config/rest.schema.js';
 
 @injectable()
 export default class MongoClientService implements DatabaseClientInterface {
@@ -14,18 +12,18 @@ export default class MongoClientService implements DatabaseClientInterface {
 
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
-    @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
+    private retryCount: number, private retryTimeout: number
   ) {}
 
   private async _connectWithRetry(uri: string): Promise<Mongoose> {
     let attempt = 0;
-    while (attempt < this.config.get('RETRY_COUNT')) {
+    while (attempt < this.retryCount) {
       try {
         return await mongoose.connect(uri);
       } catch (error) {
         attempt++;
         this.logger.error(`Failed to connect to the database. Attempt ${attempt}`);
-        await setTimeout(this.config.get('RETRY_TIMEOUT'));
+        await setTimeout(this.retryTimeout);
       }
     }
 
