@@ -11,7 +11,6 @@ import {UserServiceInterface} from '../../modules/user/user-service.interface.js
 import {LoggerInterface} from '../logger/logger.interface.js';
 import {ConfigInterface} from '../config/config.interface.js';
 import {RestSchema} from '../config/rest.schema.js';
-import ConsoleLoggerService from '../logger/console.service.js';
 import ConfigService from '../config/config.service.js';
 import UserService from '../../modules/user/user.service.js';
 import {UserModel} from '../../modules/user/user.entity.js';
@@ -23,6 +22,7 @@ import {OfferModel} from '../../modules/offer/offer.entity.js';
 import {CityServiceInterface} from '../../modules/city/city-service.interface.js';
 import CityService from '../../modules/city/city.service.js';
 import {CityModel} from '../../modules/city/city.entity.js';
+import ImportLoggerService from '../logger/import-logger.service.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -38,7 +38,8 @@ export default class ImportCommand implements CliCommandInterface {
   private cityService: CityServiceInterface;
 
   constructor() {
-    this.logger = new ConsoleLoggerService();
+    this.progress = createProgressImport();
+    this.logger = new ImportLoggerService(this.progress.message);
     this.config = new ConfigService(this.logger);
     this.salt = this.config.get('SALT');
     this.userService = new UserService(this.logger, UserModel);
@@ -105,7 +106,7 @@ export default class ImportCommand implements CliCommandInterface {
     console.log(chalk.greenBright(`Импорт строк предложений из ${filename}`));
     try {
       [this.userCount, this.offerCount] = await fileReader.getRowsCount();
-      this.progress = createProgressImport(fstatSync(fileHandle.fd).size, this.userCount + this.offerCount);
+      this.progress?.param(fstatSync(fileHandle.fd).size, this.userCount + this.offerCount);
       await fileReader.read();
     } catch (err) {
       if (!(err instanceof Error)) {
