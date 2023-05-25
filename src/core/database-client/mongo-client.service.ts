@@ -27,7 +27,7 @@ export default class MongoClientService implements DatabaseClientInterface {
       }
     }
 
-    this.logger.error(`Unable to establish database connection after ${attempt}`);
+    this.logger.error(`Unable to establish database connection after ${attempt} attempts`);
     throw new Error('Failed to connect to the database');
   }
 

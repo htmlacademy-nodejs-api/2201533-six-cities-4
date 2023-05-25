@@ -127,7 +127,12 @@ export default class ImportCommand implements CliCommandInterface {
       this.config['DB_PORT'],
       this.config['DB_NAME'],
     );
-    await this.databaseService.connect(uri);
+    try {
+      await this.databaseService.connect(uri);
+    } catch (_err) {
+      return;
+    }
+
     fileReader.on('line', this.onLine);
     fileReader.on('end', this.onComplete);
     fileReader.on('read', this.onRead);
@@ -139,6 +144,7 @@ export default class ImportCommand implements CliCommandInterface {
       this.progress?.param(fstatSync(fileHandle.fd).size, this.userCount + this.offerCount);
       await fileReader.read();
     } catch (err) {
+      await this.databaseService.disconnect();
       if (!(err instanceof Error)) {
         throw err;
       }
@@ -146,7 +152,6 @@ export default class ImportCommand implements CliCommandInterface {
     } finally {
       output.write('\u001B[?25h');
       await fileHandle.close();
-      await this.databaseService.disconnect();
     }
   }
 }
