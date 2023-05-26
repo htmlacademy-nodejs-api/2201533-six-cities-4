@@ -52,7 +52,7 @@ export default class ImportCommand implements CliCommandInterface {
     this.databaseService = new MongoClientService(
       new ConsoleLoggerService(),
       parseInt(this.config['DB_CONNECT_RETRY_COUNT'], 10),
-      parseInt(this.config['B_CONNECT_RETRY_TIMEOUT'], 10)
+      parseInt(this.config['DB_CONNECT_RETRY_TIMEOUT'], 10)
     );
   }
 

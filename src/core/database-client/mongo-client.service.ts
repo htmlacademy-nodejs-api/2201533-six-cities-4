@@ -4,6 +4,7 @@ import mongoose, {Mongoose} from 'mongoose';
 import {LoggerInterface} from '../logger/logger.interface.js';
 import {AppComponent} from '../../types/app-component.enum.js';
 import {setTimeout} from 'node:timers/promises';
+import {ConnectionType} from '../../types/connection.type.js';
 
 @injectable()
 export default class MongoClientService implements DatabaseClientInterface {
@@ -11,19 +12,18 @@ export default class MongoClientService implements DatabaseClientInterface {
   private mongooseInstance: Mongoose | null = null;
 
   constructor(
-    @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
-    private retryCount: number, private retryTimeout: number
+    @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface
   ) {}
 
-  private async _connectWithRetry(uri: string): Promise<Mongoose> {
+  private async _connectWithRetry({uri, timeout, count}: ConnectionType): Promise<Mongoose> {
     let attempt = 0;
-    while (attempt < this.retryCount) {
+    while (attempt < count) {
       try {
         return await mongoose.connect(uri);
       } catch (error) {
         attempt++;
         this.logger.error(`Failed to connect to the database. Attempt ${attempt}`);
-        await setTimeout(this.retryTimeout);
+        await setTimeout(timeout);
       }
     }
 
@@ -31,7 +31,7 @@ export default class MongoClientService implements DatabaseClientInterface {
     throw new Error('Failed to connect to the database');
   }
 
-  private async _connect(uri:string): Promise<void> {
+  private async _connect(uri:ConnectionType): Promise<void> {
     this.mongooseInstance = await this._connectWithRetry(uri);
     this.isConnected = true;
   }
@@ -42,7 +42,7 @@ export default class MongoClientService implements DatabaseClientInterface {
     this.mongooseInstance = null;
   }
 
-  public async connect(uri: string): Promise<void> {
+  public async connect(uri: ConnectionType): Promise<void> {
     if (this.isConnected) {
       throw new Error('MongoDB client already connected');
     }
