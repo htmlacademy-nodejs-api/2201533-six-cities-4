@@ -22,6 +22,8 @@ export default class RestApplication {
       this.config.get('DB_HOST'),
       this.config.get('DB_PORT'),
       this.config.get('DB_NAME'),
+      this.config.get('RETRY_TIMEOUT'),
+      this.config.get('RETRY_COUNT')
     );
 
     return this.databaseClient.connect(mongoUri);

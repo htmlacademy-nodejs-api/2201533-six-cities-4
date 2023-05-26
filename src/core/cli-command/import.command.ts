@@ -49,11 +49,7 @@ export default class ImportCommand implements CliCommandInterface {
     this.userService = new UserService(this.logger, UserModel);
     this.offerService = new OfferService(this.logger, OfferModel);
     this.cityService = new CityService(this.logger, CityModel);
-    this.databaseService = new MongoClientService(
-      new ConsoleLoggerService(),
-      parseInt(this.config['DB_CONNECT_RETRY_COUNT'], 10),
-      parseInt(this.config['DB_CONNECT_RETRY_TIMEOUT'], 10)
-    );
+    this.databaseService = new MongoClientService(new ConsoleLoggerService());
   }
 
   private async fillCities() {
@@ -126,6 +122,8 @@ export default class ImportCommand implements CliCommandInterface {
       this.config['DB_HOST'],
       this.config['DB_PORT'],
       this.config['DB_NAME'],
+      parseInt(this.config['DB_CONNECT_RETRY_TIMEOUT'], 10),
+      parseInt(this.config['DB_CONNECT_RETRY_COUNT'], 10)
     );
     try {
       await this.databaseService.connect(uri);
