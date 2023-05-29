@@ -12,8 +12,8 @@ servers:
 tags:
   - name: offers
     description: Действия с объявлениями.
-  - name: cities
-    description: Действия с городами.
+  - name: favorites
+    description: Действия с избранными предложениями.
   - name: comments
     description: Действия с комментариями.
   - name: users
@@ -108,9 +108,7 @@ paths:
       description: Загружает изображение аватара пользователя. Изображение
         аватара должно быть в формате `png` или `jpg`.
       requestBody:
-        content:
-          image/jpg: { }
-          image/png: { }
+        $ref: '#/components/requestBodies/image'
       responses:
         "201":
           description: Аватар успешно создан
@@ -144,6 +142,11 @@ paths:
           in: query
           schema:
             type: boolean
+        - name: count
+          description: Количество записей в ответе
+          in: query
+          schema:
+            type: integer
       responses:
         200:
           description: Список предложений отфильтрованных согласно параметрам
@@ -165,7 +168,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/createOffer'
+              $ref: '#/components/requestBodies/createOffer'
         required: true
       responses:
         201:
@@ -201,7 +204,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/createOffer'
+              $ref: '#'#/components/requestBodies/createOffer'
         required: true
       responses:
         200:
@@ -222,6 +225,43 @@ paths:
           description: Предложение будет удалено
         401:
           $ref: '#/components/responses/401'
+
+  /offers/{offerID}/comments/:
+    get: #2.6. Получение списка комментариев для предложения.
+      tags:
+        - comments
+      summary: Получение списка комментариев для предложения.
+      responses:
+        200:
+          description: Информация о предложении
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comments'
+    post: #2.7. Добавление комментария для предложения.
+      tags:
+        - comments
+      summary: Добавление комментария для предложения.
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        description: Комментарий.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createComment'
+        required: true
+      responses:
+        201:
+          description: Комментарий добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+        401:
+          $ref: '#/components/responses/401'
+        400:
+          $ref: '#/components/responses/validationError'
 
 components:
   schemas:
@@ -312,11 +352,13 @@ components:
           description: Город. Обязательное. Один из шести городов
           type: string
           example: Paris
-        previewImage:
-          title: Превью
-          description: Превью изображения. Обязательное. Ссылка на изображение, которое используется в качестве превью
-          type: string
-          example: https://12.react.pages.academy/static/hotel/8.jpg
+          enum:
+            - Paris
+            - Cologne
+            - Brussels
+            - Amsterdam
+            - Hamburg
+            - Dusseldorf
         isPremium:
           title: Премиальное предложение
           description: Флаг «Премиум». Обязательное. Признак премиальности предложения
@@ -326,6 +368,11 @@ components:
           title: Тип жилья
           description: 'Тип жилья. Обязательное. Один из вариантов: apartment, house, room, hotel'
           type: string
+          enum:
+            - apartment
+            - house
+            - room
+            - hotel
           example: apartment
         price:
           title: Цена
@@ -361,6 +408,26 @@ components:
           type: integer
           example: 1620
 
+    previewForGet:
+      properties:
+        previewImage:
+          title: Превью
+          description: Превью изображения. Обязательное. Ссылка на изображение, которое используется в качестве превью
+          type: string
+          example: https://12.react.pages.academy/static/hotel/8.jpg
+
+    photosForGet:
+      properties:
+        photos:
+          title: Фотографии
+          description: Фотографии жилья. Обязательное. Список ссылок на фотографии жилья. Всегда 6 фотографий
+          type: array
+          minItems: 6
+          maxItems: 6
+          items:
+            type: string
+            example: https://12.react.pages.academy/static/hotel/5.jpg
+
     offerItem:
       title: Предложение в списке
       description: Предложение по аренде для представления в списке
@@ -368,6 +435,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/offerRoot'
         - $ref: '#/components/schemas/itemExtension'
+        - $ref: '#/components/schemas/previewForGet'
 
     createExtension:
       properties:
@@ -378,15 +446,6 @@ components:
           example: Relax, rejuvenate and unplug in this ultimate rustic getaway experience in the country. In our
             beautiful screened Pondhouse, you can gaze at the stars and listen to the sounds of nature
             from your cozy warm bed.
-        photos:
-          title: Фотографии
-          description: Фотографии жилья. Обязательное. Список ссылок на фотографии жилья. Всегда 6 фотографий
-          type: array
-          minItems: 6
-          maxItems: 6
-          items:
-            type: string
-            example: https://12.react.pages.academy/static/hotel/5.jpg
         rooms:
           title: Количество комнат
           description: Количество комнат. Обязательное. Мин. 1, Макс. 8
@@ -409,6 +468,19 @@ components:
           items:
             type: string
             example: Air conditioning
+            enum:
+              - Breakfast
+              - Air conditioning
+              - Laptop friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+        host:
+          title: Автор
+          description: Автор предложения. Обязательное. Ссылка на сущность «Пользователь»
+          type: object
+          $ref: '#/components/schemas/user'
         location:
           title: Координаты
           description: Координаты предложения для аренды. Обязательное. Координаты представлены широтой и долготой
@@ -420,6 +492,19 @@ components:
             longitude:
               type: number
               example: 50.938361
+
+    imagesForCreateOffer:
+      properties:
+        previewImage:
+          title: Загрузка превью
+          description: Файл изображения. Обязательное. Ссылка на изображение, которое используется в качестве превью
+          $ref: '#'#/components/schemas/image'
+        photos:
+          title:  Загрузка фотографий
+          description: Файлы фотографий жилья. Обязательное. Список ссылок на фотографии жилья. Всегда 6 фотографий
+          type: array
+          items:
+            $ref: '#'#/components/schemas/image'
 
     createOffer:
       title: Информация для создания предложения
@@ -436,12 +521,56 @@ components:
       allOf:
         - $ref: '#/components/schemas/offerItem'
         - $ref: '#/components/schemas/createExtension'
+        - $ref: '#/components/schemas/previewForGet'
+        - $ref: '#/components/schemas/photosForGet'
+
+    image:
+      type: string
+      format: binary
+
+    createComment:
+      title: Информация для создания комментария.
+      description: Информация для создания комментария.
+      type: object
       properties:
-        host:
+        text:
+          title: Текст.
+          description: Текст комментария. Обязательное. Мин. длина 5 символов, макс. длина 1024 символа.
+          type: string
+          maxLength: 1024
+          minLength: 5
+          example: 'A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam.
+            The building is green and from 18th century.'
+        rating:
+          title: Рейтинг
+          description: Рейтинг. Обязательное. Число от 1 до 5;
+          type: integer
+          maximum: 5
+          minimum: 1
+          example: 3
+        author:
           title: Автор
-          description: Автор предложения. Обязательное. Ссылка на сущность «Пользователь»
+          description: Автор комментария. Обязательное. Ссылка на сущность «Пользователь».
           type: object
           $ref: '#/components/schemas/user'
+
+    comment:
+      title: Комментарий.
+      description: Информация о комментарии.
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/createComment'
+      properties:
+        date:
+          title: Дата создания
+          description: Дата публикации комментария. Обязательное
+          type: string
+          example: 1966-06-11T02:00:00
+
+    comments:
+      type: array
+      items:
+        $ref: '#'#/components/schemas/comment'
 
   parameters:
     token:
@@ -450,6 +579,26 @@ components:
       description: Токен авторизации пользователя
       schema:
         $ref: '#/components/schemas/token'
+
+  requestBodies:
+    image:
+      description: Загрузка файла изображения
+      content:
+        image/jpg:
+          schema:
+            $ref: '#/components/schemas/image'
+        image/png:
+          schema:
+            $ref: '#/components/schemas/image'
+
+    createOffer:
+      content:
+        multipart/form-data:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/createOffer'
+              - $ref: '#/components/schemas/imagesForCreateOffer'
+
   responses:
     401:
       description: Пользователь не авторизован
@@ -465,10 +614,8 @@ components:
           schema:
             type: string
             example: Цена должна быть в пределах от 100 до 100 000
-#2.6. Получение списка комментариев для предложения.
-#
-#2.7. Добавление комментария для предложения.
-#
+
+
 #2.13. Получения списка предложений, добавленных в избранное.
 #
 #2.14. Добавление/удаление предложения в/из избранное.
