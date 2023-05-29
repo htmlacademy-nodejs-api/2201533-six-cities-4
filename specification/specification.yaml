@@ -262,6 +262,52 @@ paths:
           $ref: '#/components/responses/401'
         400:
           $ref: '#/components/responses/validationError'
+  /favorites/:
+    get: #2.13. Получения списка предложений, добавленных в избранное.
+      tags:
+        - favorites
+      summary: Получения списка предложений, добавленных в избранное
+      parameters:
+        - $ref: '#/components/parameters/token'
+      responses:
+        200:
+          description: Список предложений добавленных в избранное
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offerItem'
+        401:
+          $ref: '#/components/responses/401'
+    post: #2.14. Добавление/удаление предложения в/из избранное.
+      tags:
+        - favorites
+      summary: Добавление/удаление предложения в/из избранное.
+      parameters:
+        - $ref: '#/components/parameters/token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/setFavorite'
+      responses:
+        200:
+          description: Статус изменён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerDetails'
+        401:
+          $ref: '#/components/responses/401'
+        404:
+          description: Предложение не найдено
+          content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
+                example: Ошибка авторизации пользователя
+
 
 components:
   schemas:
@@ -572,6 +618,16 @@ components:
       items:
         $ref: '#'#/components/schemas/comment'
 
+    setFavorite:
+      type: object
+      properties:
+        offer:
+          type: string
+          example: 6470899bdf2669adec27183a
+        isFavorite:
+          type: boolean
+          example: true
+
   parameters:
     token:
       name: X-Token
@@ -614,8 +670,3 @@ components:
           schema:
             type: string
             example: Цена должна быть в пределах от 100 до 100 000
-
-
-#2.13. Получения списка предложений, добавленных в избранное.
-#
-#2.14. Добавление/удаление предложения в/из избранное.
