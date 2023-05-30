@@ -11,8 +11,7 @@ export default class OfferService implements OfferServiceInterface {
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>
-  ) {
-  }
+  ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
     const result = await this.offerModel.create(dto);
@@ -25,8 +24,25 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findById(offerId).exec();
   }
 
-  public async update(dto:UpdateOfferDto, idOffer): Promise<DocumentType<OfferEntity>> {
-    const result = await this.offerModel.updateOne({id: idOffer}, dto).exec();
-    return result;
+  public async update(dto:UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null> {
+    try {
+      await this.offerModel.updateOne({id: idOffer}, dto).exec();
+    } catch (_) {
+      return null;
+    }
+    this.logger.info(`Update offer: ${dto.title}`);
+    return await this.findById(idOffer);
+  }
+
+  public async onAddComment(offerId: string, rating: number): Promise<string> {
+    const offer = await this.findById(offerId);
+    if (!offer) {
+      throw new Error(`Offer with id: ${offerId} not found.`);
+    }
+    const count = offer.commentsCount + 1;
+    offer.rating = (offer.rating * offer.commentsCount + rating) / count;
+    offer.commentsCount = count;
+    await offer.save();
+    return offer.title;
   }
 }

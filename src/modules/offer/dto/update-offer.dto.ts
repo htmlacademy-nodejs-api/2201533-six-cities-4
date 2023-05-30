@@ -9,13 +9,13 @@ export default class UpdateOfferDto {
   public images?: string[];
   public isPremium?: boolean;
   public isFavorite?: boolean;
-  // public rating!: number;
+  public rating?: number;
   public type?: string;
   public bedrooms?: number;
   public maxAdults?: number;
   public price?: number;
   public goods?: string[];
   // public host!: string;
-  // public commentsCount!: number;
+  public commentsCount?: number;
   public location?: MapLocation;
 }

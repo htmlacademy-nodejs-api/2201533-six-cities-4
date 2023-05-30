@@ -5,6 +5,7 @@ import UpdateOfferDto from './dto/update-offer.dto.js';
 
 export interface OfferServiceInterface {
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
-  update(dto: UpdateOfferDto): Promise<DocumentType<OfferEntity>>
+  update(dto: UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null>
   findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
+  onAddComment(offerId: string, rating: number): Promise<string>;
 }
