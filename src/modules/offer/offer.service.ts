@@ -5,6 +5,7 @@ import {OfferEntity} from './offer.entity.js';
 import {inject} from 'inversify';
 import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
+import UpdateOfferDto from './dto/update-offer.dto.js';
 
 export default class OfferService implements OfferServiceInterface {
   constructor(
@@ -24,4 +25,8 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findById(offerId).exec();
   }
 
+  public async update(dto:UpdateOfferDto, idOffer): Promise<DocumentType<OfferEntity>> {
+    const result = await this.offerModel.updateOne({id: idOffer}, dto).exec();
+    return result;
+  }
 }
