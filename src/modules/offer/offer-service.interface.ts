@@ -8,6 +8,6 @@ export interface OfferServiceInterface {
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>>;
   update(dto: UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null>
   findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  AddComment(offerId: string, dto: CreateCommentDto): Promise<void>;
+  addComment(offerId: string, dto: CreateCommentDto): Promise<void>;
   delete(offerId: string): Promise<void>;
 }

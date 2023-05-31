@@ -7,7 +7,7 @@ import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import CommentService from '../comments/comment.service.js';
-import CreateCommentDto from "../comments/dto/create-comment.dto";
+import CreateCommentDto from '../comments/dto/create-comment.dto.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -52,5 +52,6 @@ export default class OfferService implements OfferServiceInterface {
 
   public async delete(id: string): Promise<void> {
     await this.commentService.deleteByOffer(id);
+    await this.offerModel.findByIdAndDelete(id);
   }
 }
