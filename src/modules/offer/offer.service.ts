@@ -8,6 +8,8 @@ import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import CommentService from '../comments/comment.service.js';
 import CreateCommentDto from '../comments/dto/create-comment.dto.js';
+import OfferFilterDto from './dto/offer-filter.dto.js';
+import {SortOrder} from 'mongoose';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -53,5 +55,9 @@ export default class OfferService implements OfferServiceInterface {
   public async delete(id: string): Promise<void> {
     await this.commentService.deleteByOffer(id);
     await this.offerModel.findByIdAndDelete(id);
+  }
+
+  select(dto: OfferFilterDto, limit: number, sort: { [key: string]: SortOrder; }): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find(dto).sort(sort).limit(limit).exec();
   }
 }
