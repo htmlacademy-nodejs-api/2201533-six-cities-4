@@ -11,6 +11,7 @@ export type RestSchema = {
   DB_NAME: string;
   RETRY_COUNT: number
   RETRY_TIMEOUT: number
+  RESPONSE_OFFER_LIMIT: number
 }
 
 convict.addFormats(validator);
@@ -69,5 +70,11 @@ export const configRestSchema = convict<RestSchema>({
     format: Number,
     env: 'DB_CONNECT_RETRY_TIMEOUT',
     default: 1000
+  },
+  RESPONSE_OFFER_LIMIT: {
+    doc: 'Maximum number of offers in the response',
+    format: Number,
+    env: 'RESPONSE_OFFER_LIMIT',
+    default: 60
   }
 });
