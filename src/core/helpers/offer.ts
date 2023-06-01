@@ -1,4 +1,4 @@
-import {Offer} from '../../types/offer.type.js';
+import {Offer} from '../../types/offer.types';
 import {cities} from '../../types/cities.enum.js';
 import {OfferType} from '../../types/offer-type.enum.js';
 import {Goods} from '../../types/goods.enum.js';

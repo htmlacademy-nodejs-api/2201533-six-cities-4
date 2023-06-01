@@ -13,7 +13,7 @@ import {config, DotenvParseOutput} from 'dotenv';
 import UserService from '../../modules/user/user.service.js';
 import {UserModel} from '../../modules/user/user.entity.js';
 import {createUser} from '../helpers/user.js';
-import {Offer} from '../../types/offer.type.js';
+import {Offer} from '../../types/offer.types';
 import {OfferServiceInterface} from '../../modules/offer/offer-service.interface.js';
 import OfferService from '../../modules/offer/offer.service.js';
 import {OfferModel} from '../../modules/offer/offer.entity.js';
