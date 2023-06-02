@@ -11,5 +11,7 @@ export const createSHA256 = (line: string, salt: string): string => {
 };
 
 export function fillDTO<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
+  console.log(someDto);
+  console.log(plainObject);
   return plainToInstance(someDto, plainObject, { excludeExtraneousValues: true });
 }

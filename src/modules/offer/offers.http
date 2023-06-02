@@ -4,3 +4,44 @@ GET http://localhost:5000/offers HTTP/1.1
 Content-Type: application/json
 
 ###
+
+## Добавить новое предложение
+
+POST http://localhost:5000/offers HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Отладочное предложение по аренде",
+  "description": "Великолепное отладочное преложение, Шикарный вид на горный пейзаж, чистый морской воздух, Подъём в 6, завтрак в 8",
+  "date": "2023-05-23T12:21:09.536Z",
+  "city": "6479b404c692d3239fefd73b",
+  "previewImage": "previewImage",
+  "images": [
+    "image1",
+    "image2",
+    "image3",
+    "image4",
+    "image5",
+    "image6"
+  ],
+  "isPremium": "true",
+  "isFavorite": "false",
+  "rating": 0,
+  "type": "House",
+  "bedrooms": 3,
+  "maxAdults": 4,
+  "price": 900,
+  "goods": [
+    "Air conditioning",
+    "Towels",
+    "Laptop friendly workspace"
+  ],
+  "host": "6479985de6863306d5a40922",
+  "commentsCount": 250,
+  "location": {
+    "latitude": 50.8159,
+    "longitude": 4.3889
+  }
+}
+
+###

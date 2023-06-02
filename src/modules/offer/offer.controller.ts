@@ -8,6 +8,7 @@ import {OfferServiceInterface} from './offer-service.interface.js';
 import OfferItemRdo from './rdo/offer-item.rdo.js';
 import {fillDTO} from '../../core/helpers/common.js';
 import CreateOfferDto from './dto/create-offer.dto.js';
+import OfferRdo from './rdo/offer.rdo.js';
 
 @injectable()
 export default class OfferController extends Controller {

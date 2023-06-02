@@ -1,6 +1,7 @@
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
+import LocationRdo from '../../location/rdo/location.rdo.js';
 
-export default class OfferItemRdo {
+export default class OfferRdo {
   @Expose()
   public id!: string;
 
@@ -9,6 +10,12 @@ export default class OfferItemRdo {
 
   @Expose()
   public city!: string;
+
+  @Expose()
+  public previewImage!: string;
+
+  @Expose()
+  public images!: string[];
 
   @Expose()
   public isPremium!: boolean;
@@ -40,15 +47,13 @@ export default class OfferItemRdo {
   @Expose()
   public maxAdults!: number;
 
-  @Expose({name: 'amenities'})
+  @Expose()
   public goods!: string[];
 
   @Expose()
   public host!: string;
 
-
-  location:
-      latitude:
-      longitude:
-
+  @Expose()
+  @Type(() => LocationRdo)
+  public location!: LocationRdo;
 }
