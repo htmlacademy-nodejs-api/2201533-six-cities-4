@@ -5,6 +5,9 @@ import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
 import {OfferServiceInterface} from './offer-service.interface.js';
+import OfferItemRdo from './rdo/offer-item.rdo.js';
+import {fillDTO} from '../../core/helpers/common.js';
+import CreateOfferDto from './dto/create-offer.dto.js';
 
 @injectable()
 export default class OfferController extends Controller {
@@ -22,10 +25,13 @@ export default class OfferController extends Controller {
 
   public async index (_req: Request, res: Response): Promise<void> {
     const offers = await this.offerService.select({});
-    this.ok(res, offers);
+    const offersToResponse = fillDTO(OfferItemRdo, offers);
+    this.ok(res, offersToResponse);
   }
 
-  public create(_req: Request, _res: Response): void {
-    // Код обработчика
+  public async create({ body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
+    res: Response): Promise<void> {
+    const result = await this.offerService.create(body);
+    this.created(res, fillDTO(OfferRdo, result));
   }
 }
