@@ -32,4 +32,8 @@ export default class CityService implements CityServiceInterface {
   public async findByName(name:string): Promise<DocumentType<CityEntity> | null> {
     return this.cityModel.findOne({name});
   }
+
+  public async find(): Promise<DocumentType<CityEntity>[]> {
+    return this.cityModel.find();
+  }
 }

@@ -5,6 +5,7 @@ import {inject, injectable} from 'inversify';
 import {DocumentType, types} from '@typegoose/typegoose';
 import {CommentEntity} from './comment.entity.js';
 import CreateCommentDto from './dto/create-comment.dto.js';
+import {LIMIT_COMMENT, SORT_DEFAULT} from '../consts.js';
 
 @injectable()
 export default class CommentService implements CommentServiceInterface {
@@ -22,5 +23,14 @@ export default class CommentService implements CommentServiceInterface {
 
   public async deleteByOffer(offerId: string): Promise<void> {
     await this.commentModel.deleteMany({offer: offerId});
+  }
+
+  public async findByOffer(offerId: string): Promise<DocumentType<CommentEntity>[]> {
+    return await this.commentModel
+      .find({offer: offerId})
+      .sort(SORT_DEFAULT)
+      .limit(LIMIT_COMMENT)
+      .populate(['author'])
+      .exec();
   }
 }

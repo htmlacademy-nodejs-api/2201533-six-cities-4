@@ -1,4 +1,5 @@
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
+import CityRdo from '../../city/rdo/city.rdo.js';
 
 export default class OfferItemRdo {
   @Expose()
@@ -8,7 +9,11 @@ export default class OfferItemRdo {
   public title!: string;
 
   @Expose()
-  public city!: string;
+  @Type(() => CityRdo)
+  public city!: CityRdo;
+
+  @Expose()
+  public previewImage!: string;
 
   @Expose()
   public isPremium!: boolean;

@@ -14,15 +14,15 @@ Content-Type: application/json
   "title": "Отладочное предложение по аренде",
   "description": "Великолепное отладочное преложение, Шикарный вид на горный пейзаж, чистый морской воздух, Подъём в 6, завтрак в 8",
   "date": "2023-05-23T12:21:09.536Z",
-  "city": "6479b404c692d3239fefd73b",
-  "previewImage": "previewImage",
+  "city": "647ae1b0185a102c71b0d92f",
+  "previewImage": "https://12.react.pages.academy/static/hotel/5.jpg",
   "images": [
-    "image1",
-    "image2",
-    "image3",
-    "image4",
-    "image5",
-    "image6"
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg"
   ],
   "isPremium": "true",
   "isFavorite": "false",
@@ -36,7 +36,7 @@ Content-Type: application/json
     "Towels",
     "Laptop friendly workspace"
   ],
-  "host": "6479985de6863306d5a40922",
+  "host": "647ae1b1185a102c71b0d940",
   "commentsCount": 250,
   "location": {
     "latitude": 50.8159,
@@ -45,3 +45,72 @@ Content-Type: application/json
 }
 
 ###
+
+## Добавить новое предложение
+
+POST http://localhost:5000/offers HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Отладочное предложение по аренде",
+  "description": "Великолепное отладочное преложение, Шикарный вид на горный пейзаж, чистый морской воздух, Подъём в 6, завтрак в 8",
+  "date": "2023-05-23T12:21:09.536Z",
+  "city": "647ae1b0185a102c71b0d92f",
+  "previewImage": "https://12.react.pages.academy/static/hotel/5.jpg",
+  "images": [
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg"
+  ],
+  "isPremium": "true",
+  "isFavorite": "false",
+  "rating": 0,
+  "type": "House",
+  "bedrooms": 3,
+  "maxAdults": 4,
+  "price": 900,
+  "goods": [
+    "Air conditioning",
+    "Towels",
+    "Laptop friendly workspace"
+  ],
+  "host": "647ae1b1185a102c71b0d940",
+  "commentsCount": 250,
+  "location": {
+    "latitude": 50.8159,
+    "longitude": 4.3889
+  }
+}
+
+###
+
+## Получить список из пяти премиальных предложений города Дюсельдорф
+GET http://localhost:5000/offers?city=647ae1b0185a102c71b0d937&isPremium=true&count=5 HTTP/1.1
+Content-Type: application/json
+
+###
+
+## Получить отдельное предложение
+GET http://localhost:5000/offers/647ae1b1185a102c71b0d9ea HTTP/1.1
+Content-Type: application/json
+
+###
+
+## Добавить новое предложение
+
+PATCH http://localhost:5000/offers/647ae1b1185a102c71b0d9ea HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Редактирование предложения по аренде"
+}
+
+###
+
+## Удалить предложение
+
+DELETE http://localhost:5000/offers/647ae1b1185a102c71b0d9ea HTTP/1.1
+Content-Type: application/json

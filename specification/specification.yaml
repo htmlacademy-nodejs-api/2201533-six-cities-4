@@ -18,6 +18,8 @@ tags:
     description: Действия с комментариями.
   - name: users
     description: Действия с пользователем.
+  - name: cities
+    description: Действия с городами
 
 
 paths:
@@ -126,6 +128,40 @@ paths:
         204:
           description: Пользователь покинул закрытую часть приложения
 
+  /:
+    get: #Получение списка городов. (в т.з. нет, у меня будет)
+
+  /{cityName}:
+    get: #Получение списка предложений по аренде в городе ...
+      tags:
+        - cities
+      summary: Получение списка предложений по аренде.
+      parameters:
+        - name: isPremium
+          description: Выбрать премиальные предложения
+          in: query
+          schema:
+            type: boolean
+        - name: isFavorite
+          description: Выбрать избранные предложения
+          in: query
+          schema:
+            type: boolean
+        - name: count
+          description: Количество записей в ответе
+          in: query
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Список предложений отфильтрованных согласно параметрам
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offerItem'
+
   /offers:
     get:  #2.4. Получение списка предложений по аренде.
       tags:
@@ -193,7 +229,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/offerDetails'
-    put:  #2.2. Редактирование предложения.
+    patch:  #2.2. Редактирование предложения.
       tags:
         - offers
       summary: Редактирование предложения.
@@ -221,8 +257,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/token'
       responses:
-        202:
-          description: Предложение будет удалено
+        204:
+          description: Предложение удалено
         401:
           $ref: '#/components/responses/401'
 

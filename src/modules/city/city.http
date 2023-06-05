@@ -1,0 +1,47 @@
+# City
+## Получить список городов
+
+GET http://localhost:5000/ HTTP/1.1
+Content-Type: application/json
+
+###
+
+# Offers by City
+## Получить список предложений по городу Paris
+
+GET http://localhost:5000/Paris HTTP/1.1
+Content-Type: application/json
+
+###
+
+# Offers by City with parameters
+## Получить список премиальных предложений по городу Paris
+
+GET http://localhost:5000/Paris?isPremium=true HTTP/1.1
+Content-Type: application/json
+
+###
+
+# Offers by City with parameters
+## Получить список избранных предложений по городу Paris
+
+GET http://localhost:5000/Paris?isFavorite=true HTTP/1.1
+Content-Type: application/json
+
+###
+
+# Offers by City with parameters
+## Получить список не избранных, не премиальных предложений по городу Paris
+
+GET http://localhost:5000/Paris?isFavorite=false&isPremium=false HTTP/1.1
+Content-Type: application/json
+
+###
+
+# Offers by City with parameters
+## Получить список не избранных, не премиальных предложений по городу Paris в количестве 2 штук
+
+GET http://localhost:5000/Paris?isFavorite=false&isPremium=false&count=2 HTTP/1.1
+Content-Type: application/json
+
+###

@@ -1,5 +1,6 @@
 import {injectable} from 'inversify';
 import {Router, Response} from 'express';
+import asyncHandler from 'express-async-handler';
 import {LoggerInterface} from '../logger/logger.interface.js';
 import {RouteInterface} from '../../types/route.interface.js';
 import {StatusCodes} from 'http-status-codes';
@@ -20,7 +21,13 @@ export abstract class Controller implements ControllerInterface {
   }
 
   public addRoute(route: RouteInterface) {
-    this._router[route.method](route.path, route.handler.bind(this));
+    const routeHandler = asyncHandler(route.handler.bind(this));
+    const middlewares = route.middlewares?.map(
+      (middleware) => asyncHandler(middleware.execute.bind(middleware))
+    );
+
+    const allHandlers = middlewares ? [...middlewares, routeHandler] : routeHandler;
+    this._router[route.method](route.path, allHandlers);
     this.logger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }
 
@@ -41,5 +48,9 @@ export abstract class Controller implements ControllerInterface {
 
   public ok<T>(res: Response, data: T): void {
     this.send(res, StatusCodes.OK, data);
+  }
+
+  public notFound(res: Response, msg: string): void {
+    this.send(res, StatusCodes.NOT_FOUND, {error: msg});
   }
 }

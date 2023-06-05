@@ -8,6 +8,7 @@ import {getMongoURI} from '../core/helpers/mongo-conection-string.js';
 import {fillCities} from '../core/helpers/fill-cities.js';
 import express, {Express} from 'express';
 import {ControllerInterface} from '../core/controller/controller-interface.js';
+import {ExceptionFilterInterface} from '../core/exeption-filters/exeption-filter.iterface.js';
 
 @injectable()
 export default class RestApplication {
@@ -16,7 +17,11 @@ export default class RestApplication {
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
     @inject(AppComponent.DatabaseInterface) private readonly databaseClient: DatabaseClientInterface,
-    @inject(AppComponent.OfferController) private readonly offerController: ControllerInterface
+    @inject(AppComponent.OfferController) private readonly offerController: ControllerInterface,
+    @inject(AppComponent.CityController) private readonly cityController: ControllerInterface,
+    @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
+    @inject(AppComponent.CommentController) private readonly commentController: ControllerInterface,
+    @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
   ) {
     this.expressApplication = express();
   }
@@ -56,7 +61,16 @@ export default class RestApplication {
   private async _initRoutes() {
     this.logger.info('Controller initialization ...');
     this.expressApplication.use('/offers', this.offerController.router);
+    this.expressApplication.use('/', this.cityController.router);
+    this.expressApplication.use('/users', this.userController.router);
+    this.expressApplication.use('/:offerId/comments', this.commentController.router);
     this.logger.info('Controller initialization completed');
+  }
+
+  private async _initExceptionFilters() {
+    this.logger.info('Exception filters initialization');
+    this.expressApplication.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
+    this.logger.info('Exception filters completed');
   }
 
   public async init() {
@@ -66,6 +80,7 @@ export default class RestApplication {
     await this._initDb();
     await fillCities();
     this.logger.info('Cities added to base');
+    await this._initExceptionFilters();
     await this._initMiddleware();
     await this._initRoutes();
     await this._initServer();

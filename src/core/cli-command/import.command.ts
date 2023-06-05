@@ -26,6 +26,12 @@ import MongoClientService from '../database-client/mongo-client.service.js';
 import {getMongoURI} from '../helpers/mongo-conection-string.js';
 import {cities} from '../../types/cities.enum.js';
 import ConsoleLoggerService from '../logger/console.service.js';
+import {ConfigInterface} from '../config/config.interface.js';
+import {RestSchema} from '../config/rest.schema.js';
+import ConfigService from '../config/config.service.js';
+import {CommentServiceInterface} from '../../modules/comments/comment.service.interface.js';
+import CommentService from '../../modules/comments/comment.service.js';
+import {CommentModel} from '../../modules/comments/comment.entity.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -39,7 +45,9 @@ export default class ImportCommand implements CliCommandInterface {
   private userService: UserServiceInterface;
   private offerService: OfferServiceInterface;
   private cityService: CityServiceInterface;
+  private readonly commentService: CommentServiceInterface;
   private databaseService!: DatabaseClientInterface;
+  private readonly configService!: ConfigInterface<RestSchema>;
 
   constructor() {
     this.progress = createProgressImport();
@@ -47,7 +55,15 @@ export default class ImportCommand implements CliCommandInterface {
     this.config = config().parsed as DotenvParseOutput;
     this.salt = this.config['SALT'];
     this.userService = new UserService(this.logger, UserModel);
-    this.offerService = new OfferService(this.logger, OfferModel);
+    this.commentService = new CommentService(this.logger, CommentModel);
+    this.configService = new ConfigService(this.logger);
+    this.offerService = new OfferService(
+      this.logger,
+      OfferModel,
+      this.commentService,
+      this.configService,
+
+    );
     this.cityService = new CityService(this.logger, CityModel);
     this.databaseService = new MongoClientService(new ConsoleLoggerService());
   }

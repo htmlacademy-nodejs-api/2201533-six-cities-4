@@ -1,6 +1,6 @@
 import {City} from './city.type';
 import {MapLocation} from './location.type';
-import OfferFilterDto from '../modules/offer/dto/offer-filter.dto.js';
+import CityOfferFilterDto from '../modules/offer/dto/offer-filter.dto.js';
 import {SortOrder} from 'mongoose';
 
 export type Offer = {
@@ -24,7 +24,7 @@ export type Offer = {
 }
 
 export type OfferFilterType = {
-  dto?: OfferFilterDto;
+  dto?: CityOfferFilterDto;
   sort?: { [key: string]: SortOrder; };
   limit?: number;
 }
