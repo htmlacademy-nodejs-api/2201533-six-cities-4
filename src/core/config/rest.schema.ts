@@ -9,9 +9,10 @@ export type RestSchema = {
   DB_PASSWORD: string;
   DB_PORT: string;
   DB_NAME: string;
-  RETRY_COUNT: number
-  RETRY_TIMEOUT: number
-  RESPONSE_OFFER_LIMIT: number
+  RETRY_COUNT: number;
+  RETRY_TIMEOUT: number;
+  RESPONSE_OFFER_LIMIT: number;
+  UPLOAD_DIRECTORY: string;
 }
 
 convict.addFormats(validator);
@@ -76,5 +77,11 @@ export const configRestSchema = convict<RestSchema>({
     format: Number,
     env: 'RESPONSE_OFFER_LIMIT',
     default: 60
+  },
+  UPLOAD_DIRECTORY: {
+    doc: 'Directory for upload files',
+    format: String,
+    env: 'UPLOAD_DIRECTORY',
+    default: null
   }
 });

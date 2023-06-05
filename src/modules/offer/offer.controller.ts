@@ -14,6 +14,7 @@ import UpdateOfferDto from './dto/update-offer.dto.js';
 import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.js';
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import {LocationInstanceMiddleware} from '../middlewares/location-instance.middleware.js';
+import {DocumentExistsMiddleware} from '../middlewares/document-exists.middleware.js';
 
 @injectable()
 export default class OfferController extends Controller {
@@ -30,13 +31,22 @@ export default class OfferController extends Controller {
       middlewares: [new LocationInstanceMiddleware, new ValidateDtoMiddleware(CreateOfferDto)]}
     );
     this.addRoute({path: '/:offerId', method: HttpMethod.Get, handler: this.show,
-      middlewares: [new ObjectIdValidator('offerId')]}
+      middlewares: [
+        new ObjectIdValidator('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+      ]}
     );
     this.addRoute({path: '/:offerId', method: HttpMethod.Patch, handler: this.patch,
-      middlewares: [new ObjectIdValidator('offerId')]}
+      middlewares: [
+        new ObjectIdValidator('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+      ]}
     );
     this.addRoute({path: '/:offerId', method: HttpMethod.Delete, handler: this.delete,
-      middlewares: [new ObjectIdValidator('offerId')]}
+      middlewares: [
+        new ObjectIdValidator('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+      ]}
     );
   }
 

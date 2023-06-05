@@ -5,8 +5,9 @@ import UpdateOfferDto from './dto/update-offer.dto.js';
 import CreateCommentDto from '../comments/dto/create-comment.dto.js';
 import {OfferFilterType} from '../../types/offer.types.js';
 import {CommentEntity} from '../comments/comment.entity.js';
+import {DocumentExistsInterface} from '../../types/document-exists.interface.js';
 
-export interface OfferServiceInterface {
+export interface OfferServiceInterface extends DocumentExistsInterface{
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null>;
   update(dto: UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null>
   findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
