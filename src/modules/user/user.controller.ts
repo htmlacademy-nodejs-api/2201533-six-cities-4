@@ -16,19 +16,30 @@ import LoginUserDto from './dto/login-user.dto.js';
 import {createJWT} from '../../core/helpers/create-jwt.js';
 import {JWT_ALGORITHM} from '../consts.js';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
+import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.js';
+import {UploadFileMiddleware} from '../middlewares/upload-file.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
-    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>
+    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
 
     this.addRoute({ path: '/register', method: HttpMethod.Post, handler: this.create });
     this.addRoute({ path: '/login', method: HttpMethod.Post, handler: this.login });
+    this.addRoute({
+      path: '/:userId/avatar',
+      method: HttpMethod.Post,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new ObjectIdValidator('userId'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+      ]
+    });
   }
 
   public async create(
@@ -63,7 +74,7 @@ export default class UserController extends Controller {
     if (!user) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
-        `Unauthorized`,
+        'Unauthorized',
         'UserController',
       );
     }
@@ -81,5 +92,12 @@ export default class UserController extends Controller {
       email: user.email,
       token
     }));
+  }
+
+  public async uploadAvatar(req: Request, res: Response) {
+    console.log(req);
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }

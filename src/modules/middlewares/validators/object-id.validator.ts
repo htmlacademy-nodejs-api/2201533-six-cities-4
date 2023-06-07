@@ -7,7 +7,8 @@ import {StatusCodes} from 'http-status-codes';
 export class ObjectIdValidator implements MiddlewareInterface {
   constructor(private param: string) {}
 
-  public execute({params}: Request, _res: Response, next: NextFunction): void {
+  public execute(req: Request, _res: Response, next: NextFunction): void {
+    const {params} = req;
     const objectId = params[this.param];
 
     if (Types.ObjectId.isValid(objectId)) {

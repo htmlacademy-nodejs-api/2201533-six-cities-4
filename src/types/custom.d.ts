@@ -1,8 +1,7 @@
+import {UserTokenType} from './user-token.type.js';
+
 declare namespace Express {
   export interface Request {
-    user: {
-      id: string,
-      email: string,
-    }
+    user: UserTokenType;
   }
 }
