@@ -4,3 +4,5 @@ export const LIMIT_COMMENT = 50;
 export const SORT_DEFAULT = {
   date: Orders.dest
 };
+
+export const JWT_ALGORITHM = 'HS256';

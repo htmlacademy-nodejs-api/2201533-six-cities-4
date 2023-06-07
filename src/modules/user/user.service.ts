@@ -5,6 +5,7 @@ import {DocumentType, types} from '@typegoose/typegoose';
 import {inject, injectable} from 'inversify';
 import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
+import LoginUserDto from './dto/login-user.dto.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -38,5 +39,19 @@ export default class UserService implements UserServiceInterface {
 
   public async findById(userId: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findById(userId).exec();
+  }
+
+  public async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.findByEmail(dto.email);
+
+    if (! user) {
+      return null;
+    }
+
+    if (user.verifyPassword(dto.password, salt)) {
+      return user;
+    }
+
+    return null;
   }
 }
