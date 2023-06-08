@@ -18,6 +18,8 @@ import {JWT_ALGORITHM} from '../consts.js';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
 import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.js';
 import {UploadFileMiddleware} from '../middlewares/upload-file.middleware.js';
+import {RawRequestMiddleware} from '../middlewares/raw-request.middleware.js';
+import {ShowRaw} from '../middlewares/show-raw.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -36,6 +38,8 @@ export default class UserController extends Controller {
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
+        new RawRequestMiddleware(),
+        new ShowRaw(),
         new ObjectIdValidator('userId'),
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]

@@ -28,16 +28,25 @@ Content-Type: application/json
 
 ## Отправка аватарки пользователю
 
-POST http://localhost:5000/users/646df98fc7c8538bbd749e9e/avatar HTTP/1.1
+#Work
+#POST http://localhost:5000/users/646df98fc7c8538bbd749e9e/avatar HTTP/1.1
+#Home
+POST http://localhost:5000/users/647ae1b0185a102c71b0d93a/avatar HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="avatar"; filename="avatar-angelina.jpg";
 Content-Type: image/png
+#Work
 
-< /home/oem/Pictures/avatar-angelina.jpg
+#< /home/oem/Pictures/avatar-angelina.jpg
+
+#Home
+
+< /Users/User/Pictures/avatar-angelina.jpg
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name:"vito";
 
 json
+------WebKitFormBoundary7MA4YWxkTrZu0gW
