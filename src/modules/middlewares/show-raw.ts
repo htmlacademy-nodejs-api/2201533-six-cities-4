@@ -21,7 +21,7 @@ export class ShowRaw implements MiddlewareInterface {
 
     const parts: string[] = req.body.split(`--${boundary}`);
     // console.log(parts);
-    parts.forEach((part, index) => {
+    parts.filter((part) => !(part === '' || part === '--')).forEach((part, index) => {
       const headers = Object.fromEntries(
         part.substring(0, part.indexOf('\r\n\r\n')).split('\r\n')
           .filter((row) => row !== '').map((row) => row.split(':')));
@@ -35,6 +35,7 @@ export class ShowRaw implements MiddlewareInterface {
     // console.log(contentType);
     // console.log(boundary);
     // console.log(req.body);
+
     return next();
   }
 }

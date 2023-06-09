@@ -11,7 +11,6 @@ export class UploadFileMiddleware implements MiddlewareInterface {
   ) {}
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
-    console.log(this.fieldName);
     const storage = diskStorage({
       destination: this.uploadDirectory,
       filename: (_req, file, callback) => {
@@ -20,10 +19,8 @@ export class UploadFileMiddleware implements MiddlewareInterface {
         callback(null, `${filename}.${extension}`);
       }
     });
-
     const uploadSingleFileMiddleware = multer({storage})
-      .any();//single(this.fieldName);
-
+      .single(this.fieldName);// .any();
     uploadSingleFileMiddleware(req, res, next);
   }
 }

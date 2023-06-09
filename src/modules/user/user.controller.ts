@@ -38,9 +38,9 @@ export default class UserController extends Controller {
       method: HttpMethod.Post,
       handler: this.uploadAvatar,
       middlewares: [
+        new ObjectIdValidator('userId'),
         new RawRequestMiddleware(),
         new ShowRaw(),
-        new ObjectIdValidator('userId'),
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
     });
@@ -99,7 +99,7 @@ export default class UserController extends Controller {
   }
 
   public async uploadAvatar(req: Request, res: Response) {
-    console.log(req);
+    console.log(req.body);
     this.created(res, {
       filepath: req.file?.path
     });
