@@ -17,9 +17,10 @@ import {createJWT} from '../../core/helpers/create-jwt.js';
 import {JWT_ALGORITHM} from '../consts.js';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
 import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.js';
-import {UploadFileMiddleware} from '../middlewares/upload-file.middleware.js';
-import {RawRequestMiddleware} from '../middlewares/raw-request.middleware.js';
-import {ShowRaw} from '../middlewares/show-raw.js';
+// import {UploadFileMiddleware} from '../middlewares/upload-file.middleware.js';
+// import {RawRequestMiddleware} from '../middlewares/raw-request.middleware.js';
+// import {ShowRaw} from '../middlewares/show-raw.js';
+import {BusboyMiddleware} from '../middlewares/busboy.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -39,9 +40,10 @@ export default class UserController extends Controller {
       handler: this.uploadAvatar,
       middlewares: [
         new ObjectIdValidator('userId'),
-        new RawRequestMiddleware(),
-        new ShowRaw(),
-        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new BusboyMiddleware(this.configService.get('UPLOAD_DIRECTORY'), ['avatar'], 'user'),
+        // new RawRequestMiddleware(),
+        // new ShowRaw(),
+        // new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
     });
   }
@@ -99,7 +101,7 @@ export default class UserController extends Controller {
   }
 
   public async uploadAvatar(req: Request, res: Response) {
-    console.log(req.body);
+    // console.log(req.body);
     this.created(res, {
       filepath: req.file?.path
     });
