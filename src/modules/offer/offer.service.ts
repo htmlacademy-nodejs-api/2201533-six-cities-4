@@ -7,12 +7,14 @@ import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import UpdateOfferDto from './dto/update-offer.dto.js';
 import CreateCommentDto from '../comments/dto/create-comment.dto.js';
-import {SORT_DEFAULT} from '../consts.js';
+import {IMAGES_COUNT, SORT_DEFAULT} from '../consts.js';
 import {OfferFilterType} from '../../types/offer.types.js';
 import {ConfigInterface} from '../../core/config/config.interface.js';
 import {RestSchema} from '../../core/config/rest.schema.js';
 import {CommentServiceInterface} from '../comments/comment.service.interface.js';
 import {CommentEntity} from '../comments/comment.entity.js';
+import fs from 'node:fs';
+import path from 'node:path';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -34,17 +36,42 @@ export default class OfferService implements OfferServiceInterface {
     return this.offerModel.findById(offerId).populate(['city', 'host']).exec();
   }
 
+  public async checkUserIsHost(userId: string, offerId: string): Promise<boolean> {
+    const offer = await this.findById(offerId);
+    return (offer?.host.id === userId);
+  }
+
+  private async deleteImages(files: string[]) {
+    files.forEach(
+      (file) => fs.unlink(path.join(this.config.get('UPLOAD_DIRECTORY'), file), () => console.log)
+    );
+  }
+
   public async update(dto:UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null> {
+    let forDelete: string[] = [];
+    const fromDto = dto.images?.slice();
+    if (dto.images) {
+      const offer = await this.findById(idOffer);
+      const images = dto.images.concat(offer ? offer.images : []);
+      const forAdd = images.filter((_, index) => index < IMAGES_COUNT);
+      forDelete = images.filter((_, index) => index >= IMAGES_COUNT);
+      dto.images = forAdd;
+    }
+
     try {
       await this.offerModel.findByIdAndUpdate(idOffer, dto).exec();
-    } catch (_) {
+    } catch (err) {
+      forDelete = fromDto ? fromDto : [];
+      console.log(err);
       return null;
+    } finally {
+      await this.deleteImages(forDelete);
     }
     this.logger.info(`Update offer: ${dto.title}`);
     return this.findById(idOffer);
   }
 
-  public async addComment(id: string, dto: CreateCommentDto): Promise<DocumentType<CommentEntity>> {
+  public async addComment(id: string, dto: CreateCommentDto): Promise<DocumentType<CommentEntity> | null> {
     const offer = await this.findById(id);
     if (!offer) {
       throw new Error(`Offer with id: ${id} not found.`);
@@ -58,14 +85,19 @@ export default class OfferService implements OfferServiceInterface {
 
   public async delete(id: string): Promise<DocumentType<OfferEntity> | null> {
     await this.commentService.deleteByOffer(id);
-    return this.offerModel.findByIdAndDelete(id);
+    const offer = await this.offerModel.findByIdAndDelete(id);
+    if (offer) {
+      const forDelete = offer.images;
+      forDelete.push(offer.previewImage);
+      await this.deleteImages(forDelete);
+    }
+    return offer;
   }
 
   public async select(params: OfferFilterType): Promise<DocumentType<OfferEntity>[]> {
     const offerLimit = params.limit ? params.limit : this.config.get('RESPONSE_OFFER_LIMIT');
     const offerSort = params.sort ? params.sort : SORT_DEFAULT;
     const dto = params.dto ? params.dto : {};
-    console.log(`dto = ${dto}`);
     return this.offerModel
       .find(dto)
       .sort(offerSort)

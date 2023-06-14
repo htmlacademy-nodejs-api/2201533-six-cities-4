@@ -12,6 +12,7 @@ export class DocumentExistsMiddleware implements MiddlewareInterface {
   ) {}
 
   public async execute({params}: Request, _res: Response, next: NextFunction): Promise<void> {
+    console.log(params);
     const documentId = params[this.paramName];
     if (!await this.service.exists(documentId)) {
       throw new HttpError(

@@ -6,3 +6,19 @@ export const SORT_DEFAULT = {
 };
 
 export const JWT_ALGORITHM = 'HS256';
+
+export const mimeTypes = [
+  'image/jpeg',
+  'image/png'
+];
+
+export const IMAGES_COUNT = 6;
+
+export const offerImageFields = {
+  previewImage: 1,
+  images: IMAGES_COUNT
+};
+
+export const userImageFields = {
+  avatar: 1
+};

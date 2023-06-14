@@ -15,12 +15,26 @@ import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.j
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import {LocationInstanceMiddleware} from '../middlewares/location-instance.middleware.js';
 import {DocumentExistsMiddleware} from '../middlewares/document-exists.middleware.js';
+import {AuthenticateMiddleware} from '../middlewares/authenticate/authenticate-middleware.js';
+import {UserServiceInterface} from '../user/user-service.interface.js';
+import {ConfigInterface} from '../../core/config/config.interface.js';
+import {RestSchema} from '../../core/config/rest.schema.js';
+import {BusboyMiddleware} from '../middlewares/busboy.middleware.js';
+import CreateOfferRdo from './rdo/create-offer.rdo.js';
+// import HttpError from '../../core/errors/http-error.js';
+// import {StatusCodes} from 'http-status-codes';
+import UpdateOfferRdo from './rdo/update-offer.rdo.js';
+import {offerImageFields} from '../consts.js';
+import {TrimLikeRdoMiddleware} from '../middlewares/trim-like-rdo.middleware.js';
+import {IsHostMiddleware} from '../middlewares/authenticate/is-host.middleware.js';
 
 @injectable()
 export default class OfferController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
-    @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface
+    @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
+    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
+    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>
   ) {
     super(logger);
 
@@ -28,7 +42,17 @@ export default class OfferController extends Controller {
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
     this.addRoute({path: '/', method: HttpMethod.Post, handler: this.create,
-      middlewares: [new LocationInstanceMiddleware, new ValidateDtoMiddleware(CreateOfferDto)]}
+      middlewares: [
+        new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new BusboyMiddleware(
+          this.configService.get('UPLOAD_DIRECTORY'),
+          offerImageFields,
+          'offer',
+          CreateOfferRdo
+        ),
+        new LocationInstanceMiddleware,
+        new ValidateDtoMiddleware(CreateOfferDto)
+      ]}
     );
     this.addRoute({path: '/:offerId', method: HttpMethod.Get, handler: this.show,
       middlewares: [
@@ -39,13 +63,26 @@ export default class OfferController extends Controller {
     this.addRoute({path: '/:offerId', method: HttpMethod.Patch, handler: this.patch,
       middlewares: [
         new ObjectIdValidator('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new IsHostMiddleware(this.offerService),
+        new BusboyMiddleware(
+          this.configService.get('UPLOAD_DIRECTORY'),
+          offerImageFields,
+          'offer',
+          UpdateOfferRdo
+        ),
+        new TrimLikeRdoMiddleware(UpdateOfferRdo),
+        new LocationInstanceMiddleware,
+        new ValidateDtoMiddleware(UpdateOfferDto, true)
       ]}
     );
     this.addRoute({path: '/:offerId', method: HttpMethod.Delete, handler: this.delete,
       middlewares: [
         new ObjectIdValidator('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new IsHostMiddleware(this.offerService)
       ]}
     );
   }
@@ -59,7 +96,8 @@ export default class OfferController extends Controller {
 
   public async create({ body }: Request<Record<string, unknown>, Record<string, unknown>, CreateOfferDto>,
     res: Response): Promise<void> {
-    const result = await this.offerService.create(body);
+    const userId = res.locals.user.id;
+    const result = await this.offerService.create({...body, host: userId});
     this.created(res, fillDTO(OfferRdo, result));
   }
 

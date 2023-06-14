@@ -8,13 +8,65 @@ Content-Type: application/json
 ## Добавить новое предложение
 
 POST http://localhost:5000/offers HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0ODU2OTNlNThkM2FmODI1YWRhYTE1MyIsImlhdCI6MTY4NjQ3OTE1NywiZXhwIjoxNjg2NjUxOTU3LCJqdGkiOiI4ZDQwYWU5Zi1kNGJjLTRjYTQtYjZmNS05MDlhMzg2ZWEyODYifQ.TOsU09nVoWkdgOgEBQsDMW1ELnQ_QX-Vupt93Eq0NnI
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="apartment-01.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/apartment-01.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="apartment-02.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/apartment-02.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="apartment-03.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/apartment-03.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="studio-photos.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/studio-photos.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="room.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/room.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="studio-01.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/studio-01.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="previewImage"; filename="studio-01.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/studio-01.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="previewImage"; filename="room.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/room.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer"
 Content-Type: application/json
 
 {
   "title": "Отладочное предложение по аренде",
   "description": "Великолепное отладочное преложение, Шикарный вид на горный пейзаж, чистый морской воздух, Подъём в 6, завтрак в 8",
   "date": "2023-05-23T12:21:09.536Z",
-  "city": "647ae1b0185a102c71b0d92f",
+  "city": "6485650de6f21d82e1d46207",
   "previewImage": "https://12.react.pages.academy/static/hotel/5.jpg",
   "images": [
     "https://12.react.pages.academy/static/hotel/5.jpg",
@@ -36,54 +88,13 @@ Content-Type: application/json
     "Towels",
     "Laptop friendly workspace"
   ],
-  "host": "647ae1b1185a102c71b0d940",
   "commentsCount": 250,
   "location": {
     "latitude": 50.8159,
     "longitude": 4.3889
   }
 }
-
-###
-
-## Добавить новое предложение
-
-POST http://localhost:5000/offers HTTP/1.1
-Content-Type: application/json
-
-{
-  "title": "Отладочное предложение по аренде",
-  "description": "Великолепное отладочное преложение, Шикарный вид на горный пейзаж, чистый морской воздух, Подъём в 6, завтрак в 8",
-  "date": "2023-05-23T12:21:09.536Z",
-  "city": "647ae1b0185a102c71b0d92f",
-  "previewImage": "https://12.react.pages.academy/static/hotel/5.jpg",
-  "images": [
-    "https://12.react.pages.academy/static/hotel/5.jpg",
-    "https://12.react.pages.academy/static/hotel/5.jpg",
-    "https://12.react.pages.academy/static/hotel/5.jpg",
-    "https://12.react.pages.academy/static/hotel/5.jpg",
-    "https://12.react.pages.academy/static/hotel/5.jpg",
-    "https://12.react.pages.academy/static/hotel/5.jpg"
-  ],
-  "isPremium": "true",
-  "isFavorite": "false",
-  "rating": 0,
-  "type": "House",
-  "bedrooms": 3,
-  "maxAdults": 4,
-  "price": 900,
-  "goods": [
-    "Air conditioning",
-    "Towels",
-    "Laptop friendly workspace"
-  ],
-  "host": "647ae1b1185a102c71b0d940",
-  "commentsCount": 250,
-  "location": {
-    "latitude": 50.8159,
-    "longitude": 4.3889
-  }
-}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ###
 
@@ -99,18 +110,46 @@ Content-Type: application/json
 
 ###
 
-## Добавить новое предложение
+## Редактировать предложение
 
-PATCH http://localhost:5000/offers/647ae1b1185a102c71b0d9ea HTTP/1.1
+PATCH http://localhost:5000/offers/6486f56a53e93f2a1f586590 HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0ODU2OTNlNThkM2FmODI1YWRhYTE1MyIsImlhdCI6MTY4NjQ3OTE1NywiZXhwIjoxNjg2NjUxOTU3LCJqdGkiOiI4ZDQwYWU5Zi1kNGJjLTRjYTQtYjZmNS05MDlhMzg2ZWEyODYifQ.TOsU09nVoWkdgOgEBQsDMW1ELnQ_QX-Vupt93Eq0NnI
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="apartment-01.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/apartment-01.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer"
 Content-Type: application/json
 
 {
-  "title": "Редактирование предложения по аренде"
+  "title": "Редактированное Отладочное предложение по аренде",
+  "description": "Великолепное отладочное преложение, Шикарный вид на горный пейзаж, чистый морской воздух, Подъём в 6, завтрак в 8",
+  "previewImage": "https://12.react.pages.academy/static/hotel/5.jpg",
+  "type": "House",
+  "maxAdults": 4,
+  "price": 900,
+  "host": " 6485650de6f21d82e1d46212",
+  "goods": [
+    "Air conditioning",
+    "Towels",
+    "Laptop friendly workspace"
+  ],
+  "location": {
+    "latitude": 50.8159,
+    "longitude": 4.3889
+  }
 }
+------WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ###
 
 ## Удалить предложение
 
-DELETE http://localhost:5000/offers/647ae1b1185a102c71b0d9ea HTTP/1.1
+DELETE http://localhost:5000/offers/6486f56a53e93f2a1f586590 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0ODU2OTNlNThkM2FmODI1YWRhYTE1MyIsImlhdCI6MTY4NjQ3OTE1NywiZXhwIjoxNjg2NjUxOTU3LCJqdGkiOiI4ZDQwYWU5Zi1kNGJjLTRjYTQtYjZmNS05MDlhMzg2ZWEyODYifQ.TOsU09nVoWkdgOgEBQsDMW1ELnQ_QX-Vupt93Eq0NnI

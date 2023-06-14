@@ -5,7 +5,7 @@ import {
   IsBooleanString,
   IsDateString,
   IsEnum, IsInt,
-  IsMongoId, IsUrl, Max,
+  IsMongoId, Max,
   MaxLength, Min,
   MinLength, ValidateNested
 } from 'class-validator';
@@ -28,18 +28,15 @@ export default class CreateOfferDto {
   @IsMongoId({message: 'City field must be valid an id'})
   public city!: string;
 
-  @IsUrl({},{message: '"previewImage must be a data uri format"'})
   public previewImage!: string;
 
   @ArrayMinSize(6, {message: ''})
   @ArrayMaxSize(6, {message: ''})
-  @IsUrl({},{each: true, message: '"Image must be a data uri format"'})
   public images!: string[];
 
   @IsBooleanString({message: 'isPremium must be a boolean value'})
   public isPremium!: boolean;
 
-  @IsBooleanString({message: 'isFavorite must be a boolean value'})
   public isFavorite!: boolean;
 
   @Equals(0, {message: ''})
@@ -67,7 +64,6 @@ export default class CreateOfferDto {
   @IsEnum(Goods, {each: true, message: ''})
   public goods!: string[];
 
-  @IsMongoId({message: 'Host field must be valid an id'})
   public host!: string;
 
   @IsInt({message: ''})

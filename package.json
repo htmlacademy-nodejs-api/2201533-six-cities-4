@@ -28,6 +28,7 @@
     "@types/mime-types": "2.1.1",
     "@types/multer": "1.4.7",
     "@types/node": "18.16.3",
+    "@types/uuid": "9.0.2",
     "@typescript-eslint/eslint-plugin": "5.46.0",
     "@typescript-eslint/parser": "5.46.0",
     "eslint": "8.39.0",
@@ -65,6 +66,7 @@
     "multer": "1.4.5-lts.1",
     "nanoid": "4.0.2",
     "pino": "8.7.0",
-    "reflect-metadata": "0.1.13"
+    "reflect-metadata": "0.1.13",
+    "uuid": "9.0.0"
   }
 }

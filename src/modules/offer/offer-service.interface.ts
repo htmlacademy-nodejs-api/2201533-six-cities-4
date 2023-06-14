@@ -11,8 +11,9 @@ export interface OfferServiceInterface extends DocumentExistsInterface{
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null>;
   update(dto: UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null>
   findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  addComment(offerId: string, dto: CreateCommentDto): Promise<DocumentType<CommentEntity>>;
+  addComment(offerId: string, dto: CreateCommentDto): Promise<DocumentType<CommentEntity> | null>;
   delete(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   select(params: OfferFilterType): Promise<DocumentType<OfferEntity>[]>;
   exists(offerId: string): Promise<boolean>;
+  checkUserIsHost(userId: string, offerId: string): Promise<boolean>;
 }

@@ -1,0 +1,27 @@
+# Users
+
+## Создать нового пользователя
+
+POST http://localhost:5000/users/register HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0ODU2OTNlNThkM2FmODI1YWRhYTE1MyIsImlhdCI6MTY4NjQ2NDkyMSwiZXhwIjoxNjg2NjM3NzIxLCJqdGkiOiI4NzQ1ZGQ4My1jYWU5LTQwZWQtODI0YS02NzZlMDkyZWFlYjAifQ.gLEzZycNptFoWBKfCIDYh7nptpmiOpO5HXlc4EJTMVc
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="avatar-angelina.jpg"
+Content-Type: image/jpeg
+
+< /Users/User/Pictures/avatar-angelina.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user"
+Content-Type: application/json
+
+{
+  "email": "torans@overlook.net",
+  "avatar": "torrance.png",
+  "name": "Jack",
+  "password": "shining",
+  "type": "pro"
+}
+
+###

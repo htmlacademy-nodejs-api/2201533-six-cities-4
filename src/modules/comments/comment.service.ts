@@ -15,10 +15,14 @@ export default class CommentService implements CommentServiceInterface {
 
   ) {}
 
-  public async create(dto: CreateCommentDto, offerTitle: string): Promise<DocumentType<CommentEntity>> {
+  public async create(dto: CreateCommentDto, offerTitle: string): Promise<DocumentType<CommentEntity> | null> {
     const result = await this.commentModel.create(dto);
     this.logger.info(`Added new comment for offer: ${offerTitle}`);
-    return result;
+    return await this.findById(result.id);
+  }
+
+  private async findById(commId: string): Promise<DocumentType<CommentEntity> | null> {
+    return this.commentModel.findById(commId).populate(['author']).exec();
   }
 
   public async deleteByOffer(offerId: string): Promise<void> {

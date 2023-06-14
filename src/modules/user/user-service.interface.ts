@@ -9,4 +9,6 @@ export interface UserServiceInterface {
   findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>;
   findById(userId: string): Promise<DocumentType<UserEntity> | null>;
   verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null>;
+  verifyToken(userId: string, tokenId: string): Promise<boolean>;
+  resetToken(userId: string): void;
 }

@@ -2,6 +2,7 @@ import {User, UserType} from '../../types/user.type.js';
 import {defaultClasses, getModelForClass, modelOptions, prop} from '@typegoose/typegoose';
 import {createSHA256} from '../../core/helpers/common.js';
 import {entitiesName} from '../../types/entities-name.enum.js';
+import {NIL as uuidNil} from 'uuid';
 
 export interface UserEntity extends defaultClasses.Base {}
 
@@ -21,6 +22,9 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
   @prop({required: true, enum: UserType, type: String})
   public type = '' as unknown as UserType;
+
+  @prop({required: true, type: String})
+  public tokenId = uuidNil;
 
   constructor(userData: User) {
     super();

@@ -6,6 +6,7 @@ import {inject, injectable} from 'inversify';
 import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
+import {NIL as uuidNil, v4 as uuidV4} from 'uuid';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -38,7 +39,23 @@ export default class UserService implements UserServiceInterface {
   }
 
   public async findById(userId: string): Promise<DocumentType<UserEntity> | null> {
-    return this.userModel.findById(userId).exec();
+    return await this.userModel.findById(userId).exec();
+  }
+
+  public async verifyToken(userId: string, tokenId: string): Promise<boolean> {
+    const user = await this.findById(userId);
+    if (user) {
+      return user.tokenId === tokenId;
+    }
+    return false;
+  }
+
+  public async resetToken(userId: string) {
+    const user = await this.findById(userId);
+    if (user) {
+      user.tokenId = uuidNil;
+      await user.save();
+    }
   }
 
   public async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
@@ -49,6 +66,8 @@ export default class UserService implements UserServiceInterface {
     }
 
     if (user.verifyPassword(dto.password, salt)) {
+      user.tokenId = uuidV4();
+      await user.save();
       return user;
     }
 
