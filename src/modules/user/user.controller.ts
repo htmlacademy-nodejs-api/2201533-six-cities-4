@@ -20,8 +20,8 @@ import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.j
 import {BusboyMiddleware} from '../middlewares/busboy.middleware.js';
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import CreateUserRdo from './rdo/create-user.rdo.js';
-import {AnonymousMiddleware} from '../middlewares/authenticate/anonymous-middleware.js';
-import {AuthenticateMiddleware} from '../middlewares/authenticate/authenticate-middleware.js';
+import {AnonymousMiddleware} from '../middlewares/authenticate/anonymous.middleware.js';
+import {AuthorizedMiddleware} from '../middlewares/authenticate/authorized.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -38,7 +38,7 @@ export default class UserController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
-        new AnonymousMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new AnonymousMiddleware(),
         new BusboyMiddleware(
           this.configService.get('UPLOAD_DIRECTORY'),
           userImageFields,
@@ -53,13 +53,13 @@ export default class UserController extends Controller {
       path: '/login',
       method: HttpMethod.Get,
       handler: this.checkAuthenticate,
-      middlewares: [new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService)]
+      middlewares: [new AuthorizedMiddleware()]
     });
     this.addRoute({
       path: '/logout',
       method: HttpMethod.Post,
       handler: this.logout,
-      middlewares: [new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService)]
+      middlewares: [new AuthorizedMiddleware()]
     });
     this.addRoute({
       path: '/:userId/avatar',

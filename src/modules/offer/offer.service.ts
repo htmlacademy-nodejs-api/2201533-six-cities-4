@@ -102,7 +102,7 @@ export default class OfferService implements OfferServiceInterface {
       .find(dto)
       .sort(offerSort)
       .limit(offerLimit)
-      .populate(['city', 'host'])
+      .populate(['city', 'host', {path: 'isFavorite', transform: (_doc) => false}])
       .exec();
   }
 

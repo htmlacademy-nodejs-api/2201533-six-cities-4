@@ -9,6 +9,8 @@ import {fillCities} from '../core/helpers/fill-cities.js';
 import express, {Express} from 'express';
 import {ControllerInterface} from '../core/controller/controller-interface.js';
 import {ExceptionFilterInterface} from '../core/exeption-filters/exeption-filter.iterface.js';
+import {AuthenticateMiddleware} from '../modules/middlewares/authenticate/authenticate.middleware.js';
+import {UserServiceInterface} from '../modules/user/user-service.interface.js';
 
 @injectable()
 export default class RestApplication {
@@ -22,6 +24,7 @@ export default class RestApplication {
     @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
     @inject(AppComponent.CommentController) private readonly commentController: ControllerInterface,
     @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
+    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface
   ) {
     this.expressApplication = express();
   }
@@ -56,6 +59,9 @@ export default class RestApplication {
     this.logger.info('Global middleware initialization…');
     this.expressApplication.use(express.json());
     this.expressApplication.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
+    const authenticateMiddleware =
+      new AuthenticateMiddleware(this.config.get('JWT_SECRET'), this.userService);
+    this.expressApplication.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
     this.logger.info('Global middleware initialization completed');
   }
 

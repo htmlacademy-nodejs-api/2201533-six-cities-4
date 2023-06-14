@@ -11,21 +11,16 @@ import {fillDTO} from '../../core/helpers/common.js';
 import CommentRdo from './rdo/comment.rdo.js';
 import {CommentServiceInterface} from './comment.service.interface.js';
 import {DocumentExistsMiddleware} from '../middlewares/document-exists.middleware.js';
-import {AuthenticateMiddleware} from '../middlewares/authenticate/authenticate-middleware.js';
-import {UserServiceInterface} from '../user/user-service.interface.js';
-import {ConfigInterface} from '../../core/config/config.interface.js';
-import {RestSchema} from '../../core/config/rest.schema.js';
 import dayjs from 'dayjs';
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import CreateCommentDto from './dto/create-comment.dto.js';
+import {AuthorizedMiddleware} from '../middlewares/authenticate/authorized.middleware.js';
 
 export default class CommentController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) logger: LoggerInterface,
     @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
-    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>
   ) {
     super(logger);
 
@@ -36,7 +31,7 @@ export default class CommentController extends Controller {
       handler: this.create,
       middlewares: [
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-        new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new AuthorizedMiddleware(),
         new ValidateDtoMiddleware(CreateCommentDto)
       ]
     });

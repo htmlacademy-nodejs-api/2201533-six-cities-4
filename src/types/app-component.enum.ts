@@ -11,6 +11,7 @@ export const AppComponent = {
   CityModel: Symbol.for('CityModel'),
   OfferModel: Symbol.for('OfferModel'),
   CommentModel: Symbol.for('CommentModel'),
+  FavoritesModel: Symbol.for('FavoritesModel'),
   OfferController: Symbol.for('OfferController'),
   UserController: Symbol.for('UserController'),
   CityController: Symbol.for('CityController'),

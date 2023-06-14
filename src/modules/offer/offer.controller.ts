@@ -15,8 +15,7 @@ import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.j
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import {LocationInstanceMiddleware} from '../middlewares/location-instance.middleware.js';
 import {DocumentExistsMiddleware} from '../middlewares/document-exists.middleware.js';
-import {AuthenticateMiddleware} from '../middlewares/authenticate/authenticate-middleware.js';
-import {UserServiceInterface} from '../user/user-service.interface.js';
+// import {UserServiceInterface} from '../user/user-service.interface.js';
 import {ConfigInterface} from '../../core/config/config.interface.js';
 import {RestSchema} from '../../core/config/rest.schema.js';
 import {BusboyMiddleware} from '../middlewares/busboy.middleware.js';
@@ -27,13 +26,14 @@ import UpdateOfferRdo from './rdo/update-offer.rdo.js';
 import {offerImageFields} from '../consts.js';
 import {TrimLikeRdoMiddleware} from '../middlewares/trim-like-rdo.middleware.js';
 import {IsHostMiddleware} from '../middlewares/authenticate/is-host.middleware.js';
+import {AuthorizedMiddleware} from '../middlewares/authenticate/authorized.middleware.js';
 
 @injectable()
 export default class OfferController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
+    // @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
     @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>
   ) {
     super(logger);
@@ -43,7 +43,7 @@ export default class OfferController extends Controller {
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
     this.addRoute({path: '/', method: HttpMethod.Post, handler: this.create,
       middlewares: [
-        new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new AuthorizedMiddleware(),
         new BusboyMiddleware(
           this.configService.get('UPLOAD_DIRECTORY'),
           offerImageFields,
@@ -64,7 +64,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new ObjectIdValidator('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-        new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new AuthorizedMiddleware(),
         new IsHostMiddleware(this.offerService),
         new BusboyMiddleware(
           this.configService.get('UPLOAD_DIRECTORY'),
@@ -81,7 +81,7 @@ export default class OfferController extends Controller {
       middlewares: [
         new ObjectIdValidator('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-        new AuthenticateMiddleware(this.configService.get('JWT_SECRET'), this.userService),
+        new AuthorizedMiddleware(),
         new IsHostMiddleware(this.offerService)
       ]}
     );
