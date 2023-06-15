@@ -41,9 +41,10 @@ export default class CityController extends Controller {
       return this.logger.error(errorMessage);
     }
     const dto = fillDTO(CityOfferFilterDto, req.query);
+    const user = res.locals.user.id ?? null;
     dto.city = city.id;
 
-    const offers = await this.offerService.select(getOffersParams(dto, req.query));
+    const offers = await this.offerService.select(getOffersParams(dto, req.query), user);
     const offersToResponse = fillDTO(OfferItemRdo, offers);
     this.ok(res, offersToResponse);
   }

@@ -6,7 +6,7 @@ import {OfferEntity} from '../offer/offer.entity.js';
 @modelOptions({options: {customName: entitiesName.favorites}})
 export class FavoritesEntity extends defaultClasses.TimeStamps {
   @prop({ref: UserEntity, required: true, _id: false})
-  public author!: Ref<UserEntity>;
+  public user!: Ref<UserEntity>;
 
   @prop({ref: OfferEntity, required: true, _id: false})
   public offer!: Ref<OfferEntity>;

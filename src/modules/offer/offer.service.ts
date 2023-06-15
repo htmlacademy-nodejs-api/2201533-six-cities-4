@@ -15,6 +15,7 @@ import {CommentServiceInterface} from '../comments/comment.service.interface.js'
 import {CommentEntity} from '../comments/comment.entity.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import {FavoritesServiceInterface} from '../favorites/favorites.service.interface.js';
 
 @injectable()
 export default class OfferService implements OfferServiceInterface {
@@ -23,6 +24,7 @@ export default class OfferService implements OfferServiceInterface {
     @inject(AppComponent.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
     @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
+    @inject(AppComponent.FavoritesModel) private readonly favoritesService: FavoritesServiceInterface
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null> {
@@ -94,16 +96,21 @@ export default class OfferService implements OfferServiceInterface {
     return offer;
   }
 
-  public async select(params: OfferFilterType): Promise<DocumentType<OfferEntity>[]> {
+  public async select(params: OfferFilterType, user: string | null): Promise<DocumentType<OfferEntity>[]> {
     const offerLimit = params.limit ? params.limit : this.config.get('RESPONSE_OFFER_LIMIT');
     const offerSort = params.sort ? params.sort : SORT_DEFAULT;
     const dto = params.dto ? params.dto : {};
-    return this.offerModel
+    const result = await this.offerModel
       .find(dto)
       .sort(offerSort)
       .limit(offerLimit)
-      .populate(['city', 'host', {path: 'isFavorite', transform: (_doc) => false}])
+      .populate(['city', 'host'])
       .exec();
+    await result.map(async (offer) => {
+      offer.isFavorite = user ? await this.favoritesService.check(offer.id, user) : false;
+      return offer;
+    });
+    return result;
   }
 
   public async exists(offerId: string): Promise<boolean> {

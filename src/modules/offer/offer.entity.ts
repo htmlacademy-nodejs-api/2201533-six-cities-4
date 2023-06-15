@@ -8,7 +8,10 @@ import {LocationEntity} from '../location/location-entity.js';
 
 export interface OfferEntity extends defaultClasses.Base {}
 
-@modelOptions({options: {customName: entitiesName.offers}})
+@modelOptions({
+  options: {customName: entitiesName.offers},
+  schemaOptions: {toObject: {virtuals: true }}
+})
 export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true, type: String})
   public title!: string;
@@ -31,7 +34,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true, type: Boolean})
   public isPremium!: boolean;
 
-  @prop({ref: UserEntity, required: true, type: Boolean})
+  @prop({required: true, type: Boolean})
   public isFavorite!: boolean;
 
   @prop({required: true, type: Number})

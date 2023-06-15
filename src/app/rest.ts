@@ -24,7 +24,8 @@ export default class RestApplication {
     @inject(AppComponent.UserController) private readonly userController: ControllerInterface,
     @inject(AppComponent.CommentController) private readonly commentController: ControllerInterface,
     @inject(AppComponent.ExceptionFilterInterface) private readonly exceptionFilter: ExceptionFilterInterface,
-    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface
+    @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
+    @inject(AppComponent.FavoritesController) private readonly favoritesController: ControllerInterface
   ) {
     this.expressApplication = express();
   }
@@ -56,7 +57,7 @@ export default class RestApplication {
   }
 
   private async _initMiddleware() {
-    this.logger.info('Global middleware initialization…');
+    this.logger.info('Global middleware initialization...');
     this.expressApplication.use(express.json());
     this.expressApplication.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
     const authenticateMiddleware =
@@ -71,6 +72,7 @@ export default class RestApplication {
     this.expressApplication.use('/', this.cityController.router);
     this.expressApplication.use('/users', this.userController.router);
     this.expressApplication.use('/comments', this.commentController.router);
+    this.expressApplication.use('/favorites', this.favoritesController.router);
     this.logger.info('Controller initialization completed');
   }
 

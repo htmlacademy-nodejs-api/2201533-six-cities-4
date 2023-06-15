@@ -99,7 +99,7 @@ Content-Type: application/json
 ###
 
 ## Получить список из пяти премиальных предложений города Дюсельдорф
-GET http://localhost:5000/offers?city=646df98ec7c8538bbd749e9b&isPremium=true&count=5 HTTP/1.1
+GET http://localhost:5000/offers?city=6485650de6f21d82e1d4620f&isPremium=true&count=5 HTTP/1.1
 Content-Type: application/json
 
 ###
