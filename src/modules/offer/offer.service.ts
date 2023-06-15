@@ -106,7 +106,7 @@ export default class OfferService implements OfferServiceInterface {
       .limit(offerLimit)
       .populate(['city', 'host'])
       .exec();
-    await result.map(async (offer) => {
+    result.map(async (offer) => {
       offer.isFavorite = user ? await this.favoritesService.check(offer.id, user) : false;
       return offer;
     });

@@ -5,8 +5,6 @@ import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import {OfferServiceInterface} from '../offer/offer-service.interface.js';
 import {HttpMethod} from '../../types/http-method.enum.js';
-import HttpError from '../../core/errors/http-error.js';
-import {StatusCodes} from 'http-status-codes';
 import {fillDTO} from '../../core/helpers/common.js';
 import CommentRdo from './rdo/comment.rdo.js';
 import {CommentServiceInterface} from './comment.service.interface.js';
@@ -47,13 +45,6 @@ export default class CommentController extends Controller {
 
   public async index(req: Request, res: Response) : Promise<void> {
     const offerId = req.params.offerId;
-    if (!await this.offerService.exists(offerId)) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${offerId} not found.`,
-        'CommentController'
-      );
-    }
     const comments = await this.commentService.findByOffer(offerId);
     this.ok(res, fillDTO(CommentRdo, comments));
   }
