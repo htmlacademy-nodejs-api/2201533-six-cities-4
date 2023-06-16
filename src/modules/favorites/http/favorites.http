@@ -1,0 +1,10 @@
+#Favorites
+## Добавить в избранное
+POST http://localhost:5000/favorites/64872a65f6f1f8fa4dc16bc8 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGJmZDYwMjAxYTgwODk4OGUxNTQ0NSIsImlhdCI6MTY4Njg5NjAwMiwiZXhwIjoxNjg3MDY4ODAyLCJqdGkiOiI5ZmI4MzczMi0zNjA3LTQ5YzItYmZlMi03Yzc5OWI2NDgzOGIifQ.zti4BLej9ibzNptoq6n45bE57xh6e9Yo0Rz8YdVPVvU
+
+{
+  "isFavorite": "true"
+}
+###

@@ -16,4 +16,5 @@ export interface OfferServiceInterface extends DocumentExistsInterface{
   select(params: OfferFilterType, user: string | null): Promise<DocumentType<OfferEntity>[]>;
   exists(offerId: string): Promise<boolean>;
   checkUserIsHost(userId: string, offerId: string): Promise<boolean>;
+  findByIdWithUser(offerId: string, userId: string): Promise<DocumentType<OfferEntity>>;
 }

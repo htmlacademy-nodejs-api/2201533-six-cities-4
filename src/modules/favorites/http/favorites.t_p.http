@@ -1,0 +1,140 @@
+## Создать нового пользователя
+
+POST http://localhost:5000/users/register HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="avatar-angelina.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/avatar-angelina.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user"
+Content-Type: application/json
+
+{
+  "email": "torans@overlook.net",
+  "avatar": "torrance.png",
+  "name": "Jack",
+  "password": "shining",
+  "type": "pro"
+}
+
+###
+
+# Авторизовать пользователя
+
+POST http://localhost:5000/users/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "torans@overlook.net",
+  "password": "shining"
+}
+
+###
+
+## Добавить новое предложение
+
+POST http://localhost:5000/offers HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGJmZDYwMjAxYTgwODk4OGUxNTQ0NSIsImlhdCI6MTY4Njg5NjAwMiwiZXhwIjoxNjg3MDY4ODAyLCJqdGkiOiI5ZmI4MzczMi0zNjA3LTQ5YzItYmZlMi03Yzc5OWI2NDgzOGIifQ.zti4BLej9ibzNptoq6n45bE57xh6e9Yo0Rz8YdVPVvU
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="apartment-01.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/apartment-01.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="apartment-02.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/apartment-02.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="apartment-03.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/apartment-03.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="studio-photos.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/studio-photos.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="room.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/room.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="studio-01.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/studio-01.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="previewImage"; filename="studio-01.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/studio-01.jpg
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="previewImage"; filename="room.jpg"
+Content-Type: image/jpeg
+
+< /home/oem/Pictures/room.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="offer"
+Content-Type: application/json
+
+{
+  "title": "Отладочное предложение по аренде",
+  "description": "Великолепное отладочное преложение, Шикарный вид на горный пейзаж, чистый морской воздух, Подъём в 6, завтрак в 8",
+  "date": "2023-05-23T12:21:09.536Z",
+  "city": "6485650de6f21d82e1d46207",
+  "previewImage": "https://12.react.pages.academy/static/hotel/5.jpg",
+  "images": [
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg",
+    "https://12.react.pages.academy/static/hotel/5.jpg"
+  ],
+  "isPremium": "true",
+  "isFavorite": "false",
+  "rating": 0,
+  "type": "House",
+  "bedrooms": 3,
+  "maxAdults": 4,
+  "price": 900,
+  "goods": [
+    "Air conditioning",
+    "Towels",
+    "Laptop friendly workspace"
+  ],
+  "commentsCount": 250,
+  "location": {
+    "latitude": 50.8159,
+    "longitude": 4.3889
+  }
+}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+
+###
+
+#Favorites
+## Добавить в избранное
+POST http://localhost:5000/favorites/648c0042201a808988e15450 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0OGJmZDYwMjAxYTgwODk4OGUxNTQ0NSIsImlhdCI6MTY4Njg5NjAwMiwiZXhwIjoxNjg3MDY4ODAyLCJqdGkiOiI5ZmI4MzczMi0zNjA3LTQ5YzItYmZlMi03Yzc5OWI2NDgzOGIifQ.zti4BLej9ibzNptoq6n45bE57xh6e9Yo0Rz8YdVPVvU
+
+{
+  "isFavorite": "true"
+}
+###
