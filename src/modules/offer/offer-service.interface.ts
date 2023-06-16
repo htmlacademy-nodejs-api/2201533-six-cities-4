@@ -10,7 +10,7 @@ import {DocumentExistsInterface} from '../../types/document-exists.interface.js'
 export interface OfferServiceInterface extends DocumentExistsInterface{
   create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null>;
   update(dto: UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null>
-  findById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
+  findById(offerId: string, user?: string): Promise<DocumentType<OfferEntity> | null>;
   addComment(offerId: string, dto: CreateCommentDto): Promise<DocumentType<CommentEntity> | null>;
   delete(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   select(params: OfferFilterType, user: string | null): Promise<DocumentType<OfferEntity>[]>;

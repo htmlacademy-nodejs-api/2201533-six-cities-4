@@ -10,10 +10,10 @@ import {fillDTO} from '../../core/helpers/common.js';
 import {FavoritesServiceInterface} from './favorites.service.interface.js';
 import {OfferServiceInterface} from '../offer/offer-service.interface.js';
 import OfferItemRdo from '../offer/rdo/offer-item.rdo.js';
-import {plainToInstance} from 'class-transformer';
-import ChangeFavoriteRdo from './rdo/change-favorite.rdo.js';
-import {DocumentType} from '@typegoose/typegoose';
-import {OfferEntity} from '../offer/offer.entity.js';
+// import {plainToInstance} from 'class-transformer';
+// import ChangeFavoriteRdo from './rdo/change-favorite.rdo.js';
+// import {DocumentType} from '@typegoose/typegoose';
+// import {OfferEntity} from '../offer/offer.entity.js';
 import OfferRdo from '../offer/rdo/offer.rdo.js';
 
 export default class FavoritesController extends Controller {
@@ -49,13 +49,21 @@ export default class FavoritesController extends Controller {
     const offer = params.offerId;
     const user = res.locals.user.id;
     const rdo = plainToInstance(ChangeFavoriteRdo, body, { excludeExtraneousValues: true });
-    let call: (offer:string, user: string) => Promise<DocumentType<OfferEntity> | null>;
+    // let call: (offer: string, user: string) => Promise<DocumentType<OfferEntity> | null>;
+
     if (rdo.isFavorite) {
-      call = this.favoritesService.add;
-    } else {
-      call = this.favoritesService.delete;
+    //   call = this.favoritesService.add;
+    // } else {
+    //   call = this.favoritesService.delete;
+    // }
+    // console.log(call);
+    const rec = await this.favoritesService.add(offer, user);
+    console.log(rec);
+    const favoriteOffer = await this.offerService.findById(rec.offer.toString());
+    if (favoriteOffer) {
+      favoriteOffer.isFavorite = true;
     }
-    this.ok(res, fillDTO(OfferRdo, await call(offer, user)));
+    this.ok(res, fillDTO(OfferRdo, favoriteOffer));
   }
 
   public async index(_req: Request, res: Response) : Promise<void> {

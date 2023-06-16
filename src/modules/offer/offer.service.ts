@@ -34,8 +34,13 @@ export default class OfferService implements OfferServiceInterface {
     return this.findById(result.id);
   }
 
-  public async findById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findById(offerId).populate(['city', 'host']).exec();
+  public async findById(offerId: string, user?: string): Promise<DocumentType<OfferEntity> | null> {
+    const offer = await this.offerModel.findById(offerId).populate(['city', 'host']).exec();
+    if (offer){
+      offer.isFavorite = user ? await this.favoritesService.check(offer.id, user) : false;
+    }
+    console.log(`OfferService: ${offerId}`);
+    return offer;
   }
 
   public async checkUserIsHost(userId: string, offerId: string): Promise<boolean> {
