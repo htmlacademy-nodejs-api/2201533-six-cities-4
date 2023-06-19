@@ -2,8 +2,8 @@ import {MiddlewareInterface} from '../../../types/middleware.interface.js';
 import {ClassConstructor, plainToInstance} from 'class-transformer';
 import {NextFunction, Request, Response} from 'express';
 import {validate} from 'class-validator';
-import {StatusCodes} from 'http-status-codes';
-import fs from 'node:fs';
+import ValidationError from '../../../core/errors/validation-error.js';
+import {transformErrors} from '../../../core/helpers/common.js';
 
 export class ValidateDtoMiddleware implements MiddlewareInterface {
   constructor(
@@ -11,17 +11,13 @@ export class ValidateDtoMiddleware implements MiddlewareInterface {
     private isSkipMissing: boolean = false
   ) {}
 
-  public async execute({body}: Request, res: Response, next: NextFunction): Promise<void> {
-    // console.log('ValidateDtoMiddleware:', body);
+  public async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
+    const { body } = req;
     const dtoInstance = plainToInstance(this.dto, body);
     const errors = await validate(dtoInstance, {skipMissingProperties: this.isSkipMissing});
 
     if (errors.length > 0) {
-      res.status(StatusCodes.BAD_REQUEST).send(errors);
-      if (res.locals.files) {
-        res.locals.files.forEach((fileName: string) => fs.unlink(fileName, () => console.log));
-      }
-      return;
+      throw new ValidationError(`Validation error: "${req.path}"`, transformErrors(errors));
     }
 
     next();

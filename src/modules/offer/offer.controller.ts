@@ -15,13 +15,10 @@ import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.j
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import {LocationInstanceMiddleware} from '../middlewares/location-instance.middleware.js';
 import {DocumentExistsMiddleware} from '../middlewares/document-exists.middleware.js';
-// import {UserServiceInterface} from '../user/user-service.interface.js';
 import {ConfigInterface} from '../../core/config/config.interface.js';
 import {RestSchema} from '../../core/config/rest.schema.js';
 import {BusboyMiddleware} from '../middlewares/busboy.middleware.js';
 import CreateOfferRdo from './rdo/create-offer.rdo.js';
-// import HttpError from '../../core/errors/http-error.js';
-// import {StatusCodes} from 'http-status-codes';
 import UpdateOfferRdo from './rdo/update-offer.rdo.js';
 import {offerImageFields} from '../consts.js';
 import {TrimLikeRdoMiddleware} from '../middlewares/trim-like-rdo.middleware.js';
@@ -33,10 +30,9 @@ export default class OfferController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    // @inject(AppComponent.UserServiceInterface) private readonly userService: UserServiceInterface,
-    @inject(AppComponent.ConfigInterface) private readonly configService: ConfigInterface<RestSchema>
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>
   ) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for OfferController…');
 
@@ -88,10 +84,13 @@ export default class OfferController extends Controller {
   }
 
   public async index (req: Request, res: Response): Promise<void> {
-    const user = res.locals.user.id ?? null;
+    console.log('OfferController index res.locals: ', res.locals);
+    const user = res.locals.user ? res.locals.user.id : null;
+    console.log('OfferController index req.query: ', req.query);
     const dto = fillDTO(OfferFilterDto, req.query);
     const offers = await this.offerService.select(getOffersParams(dto, req.query), user);
     const offersToResponse = fillDTO(OfferItemRdo, offers);
+    console.log('OfferController index offersToResponse: ', offersToResponse);
     this.ok(res, offersToResponse);
   }
 
@@ -103,15 +102,17 @@ export default class OfferController extends Controller {
   }
 
   public async show(req: Request, res: Response): Promise<void> {
+    const user = res.locals.user.id ?? null;
     const offerId = req.params.offerId;
-    const result = await this.offerService.findById(offerId);
+    const result = await this.offerService.findById(offerId, user);
     this.ok(res, fillDTO(OfferRdo, result));
   }
 
   public async patch({body, params}: Request<Record<string, unknown>, Record<string, string>, UpdateOfferDto>,
     res: Response): Promise<void> {
+    const user = res.locals.user.id ?? null;
     const offerId = params.offerId as string;
-    const result = await this.offerService.update(body, offerId);
+    const result = await this.offerService.update(body, offerId, user);
     this.ok(res, fillDTO(OfferRdo, result));
   }
 

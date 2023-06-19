@@ -3,6 +3,11 @@ import {ClassConstructor, plainToInstance} from 'class-transformer';
 import * as QueryString from 'qs';
 import {OfferFilterType} from '../../types/offer.types.js';
 import OfferFilterDto from '../../modules/offer/dto/offer-filter.dto.js';
+import {ValidationError} from 'class-validator';
+import {ValidationErrorField} from '../../types/validation-error.types-field.js';
+import {ServiceError} from '../../types/service-error.enum.js';
+import {DEFAULT_STATIC_IMAGES} from '../../app/consts.js';
+import {UnknownRecord} from '../../types/unknown-record.type.js';
 
 export function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : '';
@@ -28,8 +33,51 @@ export function getOffersParams<T extends OfferFilterDto | undefined>(dto: T, qu
   return params;
 }
 
-export function createErrorObject(message: string) {
+export function createErrorObject(serviceError: ServiceError, message: string, details: ValidationErrorField[] = []) {
   return {
-    error: message,
+    errorType: serviceError,
+    message,
+    details: [...details],
   };
+}
+
+export function transformErrors(errors: ValidationError[]): ValidationErrorField[] {
+  return errors.map(({property, value, constraints}) => ({
+    property,
+    value,
+    messages: constraints ? Object.values(constraints) : []
+  }));
+}
+
+export function getFullServerPath(host: string, port: number) {
+  return `http://${host}:${port}`;
+}
+
+function isObject(value: unknown) {
+  return typeof value === 'object' && value !== null;
+}
+
+export function transformProperty(
+  property: string,
+  someObject: UnknownRecord,
+  transformFn: (object: UnknownRecord) => void
+) {
+  return Object.keys(someObject)
+    .forEach((key) => {
+      if (key === property) {
+        transformFn(someObject);
+      } else if (isObject(someObject[key])) {
+        transformProperty(property, someObject[key] as UnknownRecord, transformFn);
+      }
+    });
+}
+
+export function transformObject(properties: string[], staticPath: string, uploadPath: string, data:UnknownRecord) {
+  return properties
+    .forEach((property) => {
+      transformProperty(property, data, (target: UnknownRecord) => {
+        const rootPath = DEFAULT_STATIC_IMAGES.includes(target[property] as string) ? staticPath : uploadPath;
+        target[property] = `${rootPath}/${target[property]}`;
+      });
+    });
 }

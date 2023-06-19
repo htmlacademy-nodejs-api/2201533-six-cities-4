@@ -2,6 +2,7 @@
 ## Получить список предложений
 GET http://localhost:5000/offers HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6InRvcmFuc0BvdmVybG9vay5uZXQiLCJpZCI6IjY0ODU2OTNlNThkM2FmODI1YWRhYTE1MyIsImlhdCI6MTY4NjkxMzM0MCwiZXhwIjoxNjg3MDg2MTQwLCJqdGkiOiJiOWQ0YWRkZC1jMTNhLTQ3YjAtODNhZS00MDEwZjYyOGI2YzcifQ.HcnPqM4Jcw_cURU6qdL1GGJVlM8Efgbw90SFMzbdrLU
 
 ###
 
@@ -60,7 +61,7 @@ Content-Type: image/jpeg
 < /Users/User/Pictures/room.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="offer"
-Content-Type: application/json
+Content-Type: text/plain
 
 {
   "title": "Отладочное предложение по аренде",

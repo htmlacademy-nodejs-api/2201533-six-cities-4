@@ -24,7 +24,7 @@ export default class OfferService implements OfferServiceInterface {
     @inject(AppComponent.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
     @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
-    @inject(AppComponent.FavoritesModel) private readonly favoritesService: FavoritesServiceInterface
+    @inject(AppComponent.FavoritesServiceInterface) private readonly favoritesService: FavoritesServiceInterface
   ) {}
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null> {
@@ -34,16 +34,11 @@ export default class OfferService implements OfferServiceInterface {
     return this.findById(result.id);
   }
 
-  public async findByIdWithUser(offerId: string, userId: string): Promise<DocumentType<OfferEntity>> {
-    console.log();
-    const offer = await this.findById(offerId) as DocumentType<OfferEntity>;
-    const isFavorite = await this.favoritesService.check(offer.id, userId);
-    console.log(isFavorite);
+  public async findById(offerId: string, userId? :string): Promise<DocumentType<OfferEntity> | null> {
+    const offer = await this.offerModel.findById(offerId)
+      .populate(['city', 'host']).exec() as DocumentType<OfferEntity>;
+    offer.isFavorite = userId ? await this.favoritesService.check(offer.id, userId) : false;
     return offer;
-  }
-
-  public async findById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return await this.offerModel.findById(offerId).populate(['city', 'host']).exec();
   }
 
   public async checkUserIsHost(userId: string, offerId: string): Promise<boolean> {
@@ -57,11 +52,11 @@ export default class OfferService implements OfferServiceInterface {
     );
   }
 
-  public async update(dto:UpdateOfferDto, idOffer: string): Promise<DocumentType<OfferEntity> | null> {
+  public async update(dto:UpdateOfferDto, idOffer: string, userId: string): Promise<DocumentType<OfferEntity> | null> {
     let forDelete: string[] = [];
     const fromDto = dto.images?.slice();
     if (dto.images) {
-      const offer = await this.findById(idOffer);
+      const offer = await this.findById(idOffer, userId);
       const images = dto.images.concat(offer ? offer.images : []);
       const forAdd = images.filter((_, index) => index < IMAGES_COUNT);
       forDelete = images.filter((_, index) => index >= IMAGES_COUNT);

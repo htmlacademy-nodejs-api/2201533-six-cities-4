@@ -13,14 +13,17 @@ import dayjs from 'dayjs';
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import CreateCommentDto from './dto/create-comment.dto.js';
 import {AuthorizedMiddleware} from '../middlewares/authenticate/authorized.middleware.js';
+import {ConfigInterface} from '../../core/config/config.interface.js';
+import {RestSchema} from '../../core/config/rest.schema.js';
 
 export default class CommentController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) logger: LoggerInterface,
     @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
   ) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for CommentController…');
     this.addRoute({

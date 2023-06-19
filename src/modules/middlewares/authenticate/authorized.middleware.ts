@@ -5,6 +5,7 @@ import {StatusCodes} from 'http-status-codes';
 
 export class AuthorizedMiddleware implements MiddlewareInterface {
   public async execute(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    console.log('AuthorizedMiddleware');
     if (res.locals.user) {
       return next();
     }

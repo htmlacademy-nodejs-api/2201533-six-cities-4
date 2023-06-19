@@ -10,15 +10,18 @@ import {fillDTO, getOffersParams} from '../../core/helpers/common.js';
 import OfferItemRdo from '../offer/rdo/offer-item.rdo.js';
 import CityRdo from './rdo/city.rdo.js';
 import CityOfferFilterDto from '../offer/dto/offer-filter.dto.js';
+import {ConfigInterface} from '../../core/config/config.interface.js';
+import {RestSchema} from '../../core/config/rest.schema.js';
 
 @injectable()
 export default class CityController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface
+    @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
   ) {
-    super(logger);
+    super(logger, configService);
 
     this.logger.info('Register routes for CityController…');
 

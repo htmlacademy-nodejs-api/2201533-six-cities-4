@@ -56,10 +56,11 @@ export class BusboyMiddleware<RDO> implements MiddlewareInterface {
       }
     });
     bb.on('close', () => {
-      // this.obj = Object.assign(this.obj, this.files);
       filePromises.forEach((promise) => promise);
+      console.log('BusboyMiddleware obj:', this.obj);
       req.body = plainToInstance(this.rdo, Object.assign(this.obj, this.files));
       console.log('BusboyMiddleware files:', this.files);
+      console.log('BusboyMiddleware body:', req.body);
       this.files = {};
       next();
     });

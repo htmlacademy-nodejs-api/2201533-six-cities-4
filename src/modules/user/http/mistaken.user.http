@@ -25,3 +25,22 @@ Content-Type: application/json
 }
 
 ###
+
+## Создать нового пользователя без аватара
+
+POST http://localhost:5000/users/register HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="user"
+Content-Type: application/json
+
+{
+  "email": "toran@overlook.net",
+  "avatar": "youtorrance.png",
+  "name": "Jack",
+  "password": "shining",
+  "type": "pro"
+}
+
+###

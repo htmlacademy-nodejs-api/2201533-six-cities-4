@@ -18,5 +18,7 @@ export const AppComponent = {
   CityController: Symbol.for('CityController'),
   CommentController: Symbol.for('CommentController'),
   FavoritesController: Symbol.for('FavoritesController'),
-  ExceptionFilterInterface: Symbol.for('ExceptionFilterInterface'),
+  HttpErrorExceptionFilter: Symbol.for('HttpErrorExceptionFilter'),
+  BaseExceptionFilter: Symbol.for('BaseExceptionFilter'),
+  ValidationExceptionFilter: Symbol.for('ValidationExceptionFilter'),
 } as const;
