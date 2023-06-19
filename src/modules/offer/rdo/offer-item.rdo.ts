@@ -1,5 +1,6 @@
 import {Expose, Type} from 'class-transformer';
 import CityRdo from '../../city/rdo/city.rdo.js';
+import LocationRdo from '../../location/rdo/location.rdo.js';
 
 export default class OfferItemRdo {
   @Expose()
@@ -35,4 +36,8 @@ export default class OfferItemRdo {
 
   @Expose({name: 'commentsCount'})
   public count!: number;
+
+  @Expose()
+  @Type(() => LocationRdo)
+  public location!: LocationRdo;
 }
