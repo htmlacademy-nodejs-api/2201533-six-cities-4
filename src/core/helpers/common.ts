@@ -73,11 +73,19 @@ export function transformProperty(
 }
 
 export function transformObject(properties: string[], staticPath: string, uploadPath: string, data:UnknownRecord) {
+  const createPath = (fileName: string) => {
+    const rootPath = DEFAULT_STATIC_IMAGES.includes(fileName) ? staticPath : uploadPath;
+    return `${rootPath}/${fileName}`;
+  };
+
   return properties
     .forEach((property) => {
       transformProperty(property, data, (target: UnknownRecord) => {
-        const rootPath = DEFAULT_STATIC_IMAGES.includes(target[property] as string) ? staticPath : uploadPath;
-        target[property] = `${rootPath}/${target[property]}`;
+        if (Array.isArray(target[property])) {
+          target[property] = (target[property] as string[]).map((item) => createPath(item));
+        } else {
+          target[property] = createPath(target[property] as string);
+        }
       });
     });
 }

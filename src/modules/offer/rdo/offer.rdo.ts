@@ -44,7 +44,7 @@ export default class OfferRdo {
   @Expose()
   public description!: string;
 
-  @Expose()
+  @Expose({name: 'bedrooms'})
   public rooms!: number;
 
   @Expose()

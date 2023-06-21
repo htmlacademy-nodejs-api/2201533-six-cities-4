@@ -10,8 +10,7 @@ export class AuthenticateMiddleware implements MiddlewareInterface {
   ) {}
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
-    console.log('AuthenticateMiddleware');
-    console.log(req.originalUrl);
+    console.log('AuthenticateMiddleware', req.originalUrl, req.method);
     const user = await ejectUser(req, this.jwtSecret, this.userService);
     if (user) {
       res.locals.user = user;

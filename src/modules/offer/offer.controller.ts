@@ -84,13 +84,10 @@ export default class OfferController extends Controller {
   }
 
   public async index (req: Request, res: Response): Promise<void> {
-    console.log('OfferController index res.locals: ', res.locals);
     const user = res.locals.user ? res.locals.user.id : null;
-    console.log('OfferController index req.query: ', req.query);
     const dto = fillDTO(OfferFilterDto, req.query);
     const offers = await this.offerService.select(getOffersParams(dto, req.query), user);
     const offersToResponse = fillDTO(OfferItemRdo, offers);
-    console.log('OfferController index offersToResponse: ', offersToResponse);
     this.ok(res, offersToResponse);
   }
 

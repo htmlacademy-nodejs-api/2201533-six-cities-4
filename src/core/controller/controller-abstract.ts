@@ -64,6 +64,7 @@ export abstract class Controller implements ControllerInterface {
   }
 
   public ok<T>(res: Response, data: T): void {
+    console.log('Controller ok data', data);
     this.send(res, StatusCodes.OK, data);
   }
 

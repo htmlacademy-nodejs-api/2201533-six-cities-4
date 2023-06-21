@@ -32,6 +32,9 @@ import ConfigService from '../config/config.service.js';
 import {CommentServiceInterface} from '../../modules/comments/comment.service.interface.js';
 import CommentService from '../../modules/comments/comment.service.js';
 import {CommentModel} from '../../modules/comments/comment.entity.js';
+import FavoritesService from '../../modules/favorites/favorites.service.js';
+import {FavoritesServiceInterface} from '../../modules/favorites/favorites.service.interface.js';
+import {FavoritesModel} from '../../modules/favorites/favorites.entity.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -48,6 +51,7 @@ export default class ImportCommand implements CliCommandInterface {
   private readonly commentService: CommentServiceInterface;
   private databaseService!: DatabaseClientInterface;
   private readonly configService!: ConfigInterface<RestSchema>;
+  private readonly favoriteService!: FavoritesServiceInterface;
 
   constructor() {
     this.progress = createProgressImport();
@@ -57,12 +61,13 @@ export default class ImportCommand implements CliCommandInterface {
     this.userService = new UserService(this.logger, UserModel);
     this.commentService = new CommentService(this.logger, CommentModel);
     this.configService = new ConfigService(this.logger);
+    this.favoriteService = new FavoritesService(FavoritesModel);
     this.offerService = new OfferService(
       this.logger,
       OfferModel,
       this.commentService,
       this.configService,
-
+      this.favoriteService
     );
     this.cityService = new CityService(this.logger, CityModel);
     this.databaseService = new MongoClientService(new ConsoleLoggerService());
