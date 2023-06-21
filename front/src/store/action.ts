@@ -13,7 +13,7 @@ import type {
 } from '../types/types';
 import { ApiRoute, AppRoute, HttpCode } from '../const';
 import { Token } from '../utils';
-import {adaptSignupToServer} from '../adapters/adapter-to-server';
+import {adaptCreateOfferToServer, adaptSignupToServer} from '../adapters/adapter-to-server';
 import OfferItemDto from '../dto/offer/offer-item.dto';
 import OfferDto from '../dto/offer/offer.dto';
 
@@ -25,7 +25,7 @@ type Extra = {
 export const Action = {
   FETCH_OFFERS: 'offers/fetch',//                       *
   FETCH_OFFER: 'offer/fetch',//                         *
-  POST_OFFER: 'offer/post-offer',
+  POST_OFFER: 'offer/post-offer',//                     *
   EDIT_OFFER: 'offer/edit-offer',
   DELETE_OFFER: 'offer/delete-offer',
   FETCH_FAVORITE_OFFERS: 'offers/fetch-favorite',
@@ -78,13 +78,22 @@ export const fetchOffer = createAsyncThunk<OfferDto, Offer['id'], { extra: Extra
     }
   });
 
-export const postOffer = createAsyncThunk<Offer, NewOffer, { extra: Extra }>(
+export const postOffer = createAsyncThunk<OfferDto, NewOffer, { extra: Extra }>(
   Action.POST_OFFER,
   async (newOffer, { extra }) => {
     const { api, history } = extra;
-    const { data } = await api.post<Offer>(ApiRoute.Offers, newOffer);
+    const {offer, previewImage, images} = adaptCreateOfferToServer(newOffer);
+    const payload = new FormData();
+    payload.append('offer', JSON.stringify(offer));
+    if (previewImage) {
+      payload.append('previewImage', previewImage);
+    }
+    images.forEach((image, index) => {
+      payload.append(`images[${index}]`, image, image.name);
+    });
+    const { data } = await api.post<OfferDto>(ApiRoute.Offers, payload, {
+      headers: { 'Content-Type': 'multipart/form-data' }});
     history.push(`${AppRoute.Property}/${data.id}`);
-
     return data;
   });
 

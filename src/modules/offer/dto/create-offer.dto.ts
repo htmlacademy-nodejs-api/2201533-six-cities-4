@@ -2,7 +2,6 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   Equals, IsArray,
-  IsBooleanString,
   IsDateString,
   IsEnum, IsInt,
   IsMongoId, Max,
@@ -34,7 +33,6 @@ export default class CreateOfferDto {
   @ArrayMaxSize(6, {message: ''})
   public images!: string[];
 
-  @IsBooleanString({message: 'isPremium must be a boolean value'})
   public isPremium!: boolean;
 
   public isFavorite!: boolean;

@@ -13,6 +13,7 @@ export class ValidateDtoMiddleware implements MiddlewareInterface {
 
   public async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
     const { body } = req;
+    console.log('ValidateDtoMiddleware', body);
     const dtoInstance = plainToInstance(this.dto, body);
     const errors = await validate(dtoInstance, {skipMissingProperties: this.isSkipMissing});
 

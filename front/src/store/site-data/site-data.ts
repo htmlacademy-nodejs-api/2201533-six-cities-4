@@ -47,7 +47,6 @@ export const siteData = createSlice({
         state.isOfferLoading = true;
       })
       .addCase(fetchOffer.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.offer = adaptOfferToClient(action.payload);
         state.isOfferLoading = false;
       })
@@ -55,7 +54,8 @@ export const siteData = createSlice({
         state.isOfferLoading = false;
       })
       .addCase(postOffer.fulfilled, (state, action) => {
-        state.offers.push(action.payload);
+        console.log(action.payload);
+        state.offers.push(adaptOfferToClient(action.payload));
       })
       .addCase(editOffer.fulfilled, (state, action) => {
         const updatedOffer = action.payload;

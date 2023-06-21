@@ -24,13 +24,16 @@ import {offerImageFields} from '../consts.js';
 import {TrimLikeRdoMiddleware} from '../middlewares/trim-like-rdo.middleware.js';
 import {IsHostMiddleware} from '../middlewares/authenticate/is-host.middleware.js';
 import {AuthorizedMiddleware} from '../middlewares/authenticate/authorized.middleware.js';
+import {CheckCityMiddleware} from '../middlewares/validators/check-city.middleware.js';
+import {CityServiceInterface} from "../city/city-service.interface";
 
 @injectable()
 export default class OfferController extends Controller {
   constructor(
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
-    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>
+    @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
+    @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface
   ) {
     super(logger, configService);
 
@@ -46,7 +49,8 @@ export default class OfferController extends Controller {
           'offer',
           CreateOfferRdo
         ),
-        new LocationInstanceMiddleware,
+        new LocationInstanceMiddleware(),
+        new CheckCityMiddleware(this.cityService),
         new ValidateDtoMiddleware(CreateOfferDto)
       ]}
     );
@@ -69,7 +73,7 @@ export default class OfferController extends Controller {
           UpdateOfferRdo
         ),
         new TrimLikeRdoMiddleware(UpdateOfferRdo),
-        new LocationInstanceMiddleware,
+        new LocationInstanceMiddleware(),
         new ValidateDtoMiddleware(UpdateOfferDto, true)
       ]}
     );

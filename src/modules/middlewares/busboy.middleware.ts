@@ -27,8 +27,12 @@ export class BusboyMiddleware<RDO> implements MiddlewareInterface {
     const filePromises: Promise<void>[] = [];
     const bb = busboy({headers: req.headers});
     res.locals.files = [];
-    bb.on('file', (name, file, info) => {
+    bb.on('file', (nameFull, file, info) => {
+      console.log('BusboyMiddleware nameFull:', nameFull);
+      const name = nameFull.indexOf('[') === -1 ? nameFull : nameFull.substring(0, nameFull.indexOf('['));
+      console.log('BusboyMiddleware name:', name);
       if (this.fieldNames.includes(name) && mimeTypes.includes(info.mimeType) && this.fields[name] > 0) {
+        console.log(`'BusboyMiddleware count ${name}:`, this.fields[name]);
         if (!Object.keys(this.files).includes(name)){
           this.files[name] = [];
         }
@@ -57,10 +61,10 @@ export class BusboyMiddleware<RDO> implements MiddlewareInterface {
     });
     bb.on('close', () => {
       filePromises.forEach((promise) => promise);
-      console.log('BusboyMiddleware obj:', this.obj);
-      req.body = plainToInstance(this.rdo, Object.assign(this.obj, this.files));
+      // console.log('BusboyMiddleware obj:', this.obj);
       console.log('BusboyMiddleware files:', this.files);
-      console.log('BusboyMiddleware body:', req.body);
+      req.body = plainToInstance(this.rdo, Object.assign(this.obj, this.files));
+      // console.log('BusboyMiddleware body:', req.body);
       this.files = {};
       next();
     });
