@@ -25,8 +25,9 @@ export default class CommentService implements CommentServiceInterface {
     return this.commentModel.findById(commId).populate(['author']).exec();
   }
 
-  public async deleteByOffer(offerId: string): Promise<void> {
-    await this.commentModel.deleteMany({offer: offerId});
+  public async deleteByOffer(offerId: string): Promise<number> {
+    const deleted = await this.commentModel.deleteMany({offer: offerId}).exec();
+    return deleted.deletedCount;
   }
 
   public async findByOffer(offerId: string): Promise<DocumentType<CommentEntity>[]> {

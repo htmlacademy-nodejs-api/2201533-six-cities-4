@@ -22,6 +22,7 @@ import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js'
 import CreateUserRdo from './rdo/create-user.rdo.js';
 import {AnonymousMiddleware} from '../middlewares/authenticate/anonymous.middleware.js';
 import {AuthorizedMiddleware} from '../middlewares/authenticate/authorized.middleware.js';
+import {UploadFileMiddleware} from '../middlewares/upload-file.middleware.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -67,10 +68,7 @@ export default class UserController extends Controller {
       handler: this.uploadAvatar,
       middlewares: [
         new ObjectIdValidator('userId'),
-        // new BusboyMiddleware(this.configService.get('UPLOAD_DIRECTORY'), ['avatar'], 'user'),
-        // new RawRequestMiddleware(),
-        // new ShowRaw(),
-        // new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
     });
   }

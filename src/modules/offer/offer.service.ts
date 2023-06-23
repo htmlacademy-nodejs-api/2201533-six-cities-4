@@ -47,9 +47,9 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   private async deleteImages(files: string[]) {
-    files.forEach(
-      (file) => fs.unlink(path.join(this.config.get('UPLOAD_DIRECTORY'), file), () => console.log)
-    );
+    for (const file of files) {
+      await fs.unlink(path.join(this.config.get('UPLOAD_DIRECTORY'), file), () => console.log);
+    }
   }
 
   public async update(dto:UpdateOfferDto, idOffer: string, userId: string): Promise<DocumentType<OfferEntity> | null> {
@@ -89,7 +89,6 @@ export default class OfferService implements OfferServiceInterface {
   }
 
   public async delete(id: string): Promise<DocumentType<OfferEntity> | null> {
-    await this.commentService.deleteByOffer(id);
     const offer = await this.offerModel.findByIdAndDelete(id);
     if (offer) {
       const forDelete = offer.images;
@@ -109,10 +108,10 @@ export default class OfferService implements OfferServiceInterface {
       .limit(offerLimit)
       .populate(['city', 'host'])
       .exec();
-    result.map(async (offer) => {
+
+    for (const offer of result) {
       offer.isFavorite = user ? await this.favoritesService.check(offer.id, user) : false;
-      return offer;
-    });
+    }
     return result;
   }
 

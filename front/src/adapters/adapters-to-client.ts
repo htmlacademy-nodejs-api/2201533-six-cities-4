@@ -1,7 +1,8 @@
 import OfferItemDto from '../dto/offer/offer-item.dto.js';
-import {Offer, OfferItem, Type} from '../types/types.js';
+import {Comment, Offer, OfferItem, Type} from '../types/types.js';
 import OfferDto from '../dto/offer/offer.dto';
 import {UserType} from '../const';
+import CommentDto from '../dto/comment/comment.dto';
 
 export const adaptOffersToClient = (offers: OfferItemDto[]): OfferItem[] =>
   offers.map((offer) => ({
@@ -59,3 +60,19 @@ export const adaptOfferToClient = (offer: OfferDto): Offer =>
     images: offer.images,
     maxAdults: offer.maxAdults,
   });
+
+export const adaptCommentToClient = (comment: CommentDto): Comment => ({
+  id: comment.offer,
+  comment: comment.text,
+  date: comment.date,
+  rating: comment.rating,
+  user: {
+    name: comment.author.name,
+    avatarUrl: comment.author.avatarPath,
+    type: comment.author.type === UserType.Pro ? UserType.Pro : UserType.Regular,
+    email: comment.author.email
+  }
+});
+
+export const adaptCommentsToClient = (comments: CommentDto[]): Comment[] =>
+  comments.map((comment) => adaptCommentToClient(comment));

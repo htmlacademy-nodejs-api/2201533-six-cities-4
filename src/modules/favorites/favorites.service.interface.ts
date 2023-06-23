@@ -6,5 +6,6 @@ export interface FavoritesServiceInterface {
   delete(offer: string, user: string): Promise<DocumentType<FavoritesEntity> | null>;
   select(user: string): Promise<DocumentType<FavoritesEntity>[]>;
   add(offer: string, user: string): Promise<DocumentType<FavoritesEntity>>;
+  deleteByOffer(offer: string): Promise<number>
 }
 

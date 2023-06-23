@@ -1,5 +1,16 @@
 import {Expose} from 'class-transformer';
-import {IsArray, IsBooleanString, IsEnum, IsInt, Max, MaxLength, Min, MinLength, ValidateNested} from 'class-validator';
+import {
+  IsArray,
+  IsBooleanString,
+  IsEnum,
+  IsInt,
+  IsMongoId,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+  ValidateNested
+} from 'class-validator';
 import {OfferType} from '../../../types/offer-type.enum.js';
 import {Goods} from '../../../types/goods.enum.js';
 import CreateLocationDto from '../../location/dto/create-location.dto.js';
@@ -43,6 +54,9 @@ export default class UpdateOfferDto {
   @IsArray()
   @IsEnum(Goods, {each: true, message: ''})
   public goods?: string[];
+
+  @IsMongoId({message: 'City field must be valid an id'})
+  public city?: string;
 
   @ValidateNested()
   public location?: CreateLocationDto;

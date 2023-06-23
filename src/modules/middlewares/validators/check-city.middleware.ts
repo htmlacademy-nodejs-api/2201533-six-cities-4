@@ -12,6 +12,9 @@ export class CheckCityMiddleware implements MiddlewareInterface {
 
   public async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
     const {body} = req;
+    if (!body.city) {
+      return next();
+    }
     const cityId = body.city;
     if (Types.ObjectId.isValid(cityId)) {
       return next();

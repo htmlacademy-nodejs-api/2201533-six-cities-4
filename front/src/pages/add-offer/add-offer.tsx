@@ -31,7 +31,7 @@ const AddOffer = (): JSX.Element | null => {
       <div className="container">
         <section>
           <h1>Add new offer</h1>
-          <OfferForm offer={emptyOffer} onSubmit={handleFormSubmit} />
+          <OfferForm offer={emptyOffer} onSubmit={handleFormSubmit} isCreate/>
         </section>
       </div>
     </main>

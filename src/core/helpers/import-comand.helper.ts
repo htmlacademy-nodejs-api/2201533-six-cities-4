@@ -33,32 +33,37 @@ export function createProgressImport (): ImportProgressType {
     rowsCount = rc;
     progressLoad = new ProgressBar(size, WIDTH);
     progressRows = new ProgressBar(rowsCount, WIDTH);
+    barBytes = progressLoad.getProgress(0);
+    barRows = progressRows.getProgress(0);
   };
-  const outputProgress = () => {
-    if (rowNumber > 0) {
+  const outputProgress = (who: string) => {
+    if (rowNumber + byteCount > 0) {
       output.moveCursor(0, REVERT_ROWS_COUNT);
     }
-    output.write(message);
+    output.write(`${message} ${who}`);
     output.clearLine(1);
     output.write('\n');
-    output.write(`${barRows} Загружено: ${formatInt(rowNumber)} строк из ${rowsCount}.`);
-    output.clearLine(1);
-    output.write('\n');
-    console.log(`${barBytes} Загружено: ${byteCount} байт из ${size}`);
+    if (rowsCount * size > 0){
+      output.write(`${barRows} Загружено: ${formatInt(rowNumber)} строк из ${rowsCount}.`);
+      output.clearLine(1);
+      output.write('\n');
+      console.log(`${barBytes} Загружено: ${byteCount} байт из ${size}`);
+    }
+
   };
   const setRow = (rowCount: number) => {
     rowNumber = rowCount;
     barRows = progressRows.getProgress(rowCount);
-    outputProgress();
+    outputProgress('setRow');
   };
   const setLoaded = (loaded: number) => {
     byteCount = loaded;
     barBytes = progressLoad.getProgress(loaded);
-    outputProgress();
+    outputProgress('setLoaded');
   };
   const setMessage = (_type: string, msg: string) => {
     message = msg;
-    outputProgress();
+    outputProgress('setMessage');
   };
   return ({row: setRow, loaded: setLoaded, message: setMessage, param: setParam});
 }

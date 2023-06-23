@@ -1,16 +1,17 @@
-import { FormEvent, useCallback, useState } from 'react';
+import {FormEvent, useCallback, useRef, useState} from 'react';
 import Select from 'react-select';
 
-import { City, NewOffer, Offer } from '../../types/types';
+import {City, NewOffer, Offer} from '../../types/types';
 
 import LocationPicker from '../location-picker/location-picker';
 import { CITIES, CityLocation, GOODS, TYPES } from '../../const';
 import { capitalize } from '../../utils';
 
-enum FormFieldName {
+
+export enum FormFieldName {
   title = 'title',
   description = 'description',
-  cityName = 'cityName',
+  cityName = 'city',
   previewImage = 'previewImage',
   isPremium = 'isPremium',
   type = 'type',
@@ -18,7 +19,10 @@ enum FormFieldName {
   maxAdults = 'maxAdults',
   price = 'price',
   good = 'good-',
-  image = 'image'
+  image = 'image',
+  goods = 'goods',
+  images = 'images',
+  location = 'location'
 }
 
 const getGoods = (
@@ -50,7 +54,7 @@ const getImages = (
 ): File[] => {
   const enteredImages: File[] = [];
   for (const entry of entries) {
-    if (entry[0].startsWith(FormFieldName.image) && entry[1] instanceof File) {
+    if (entry[0].startsWith(FormFieldName.image) && entry[1] instanceof File && entry[1].name) {
       enteredImages.push(entry[1]);
     }
   }
@@ -59,12 +63,14 @@ const getImages = (
 
 type OfferFormProps<T> = {
   offer: T;
-  onSubmit: (offerData: T) => void;
+  onSubmit: (offerData: T, fields?: Set<string>) => void;
+  isCreate: boolean;
 };
 
 const OfferForm = <T extends Offer | NewOffer>({
   offer,
   onSubmit,
+  isCreate
 }: OfferFormProps<T>): JSX.Element => {
   const {
     title,
@@ -78,16 +84,20 @@ const OfferForm = <T extends Offer | NewOffer>({
     goods: chosenGoods,
     location,
   } = offer;
+  const fields = useRef(new Set<string>());
+  fields.current.add('id');
   const [chosenLocation, setChosenLocation] = useState(location);
   const [chosenCity, setChosenCity] = useState(city);
 
   const handleCityChange = (value: keyof typeof CityLocation) => {
+    fields.current.add(FormFieldName.cityName);
     setChosenCity(getCity(value));
     setChosenLocation(CityLocation[value]);
   };
 
   const handleLocationChange = useCallback(
     ({ lat, lng }: { lat: number; lng: number }) => {
+      fields.current.add(FormFieldName.location);
       setChosenLocation({ latitude: lat, longitude: lng });
     },
     []
@@ -99,21 +109,38 @@ const OfferForm = <T extends Offer | NewOffer>({
     const formData = new FormData(form);
     const data = {
       ...offer,
-      title: formData.get(FormFieldName.title),
-      description: formData.get(FormFieldName.description),
-      city: getCity(formData.get(FormFieldName.cityName)),
-      previewImage: formData.get(FormFieldName.previewImage),
-      isPremium: Boolean(formData.get(FormFieldName.isPremium)),
-      type: formData.get(FormFieldName.type),
-      bedrooms: Number(formData.get(FormFieldName.bedrooms)),
-      maxAdults: Number(formData.get(FormFieldName.maxAdults)),
-      price: Number(formData.get(FormFieldName.price)),
-      goods: getGoods(formData.entries()),
-      location: chosenLocation,
-      images: getImages(formData.entries()),
+      title: isCreate || fields.current.has(FormFieldName.title) ? formData.get(FormFieldName.title) : null,
+      description: isCreate || fields.current.has(FormFieldName.description) ? formData.get(FormFieldName.description) : null,
+      city: isCreate || fields.current.has(FormFieldName.cityName) ? getCity(formData.get(FormFieldName.cityName)) : null,
+      previewImage: isCreate || fields.current.has(FormFieldName.previewImage) ? formData.get(FormFieldName.previewImage) : null,
+      isPremium: isCreate || fields.current.has(FormFieldName.isPremium) ? Boolean(formData.get(FormFieldName.isPremium)) : null,
+      type: isCreate || fields.current.has(FormFieldName.type) ? formData.get(FormFieldName.type) : null,
+      bedrooms: isCreate || fields.current.has(FormFieldName.bedrooms) ? Number(formData.get(FormFieldName.bedrooms)) : null,
+      maxAdults: isCreate || fields.current.has(FormFieldName.maxAdults) ? Number(formData.get(FormFieldName.maxAdults)) : null,
+      price: isCreate || fields.current.has(FormFieldName.price) ? Number(formData.get(FormFieldName.price)) : null,
+      goods: isCreate || fields.current.has(FormFieldName.goods) ? getGoods(formData.entries()) : null,
+      location: isCreate || fields.current.has(FormFieldName.location) ? chosenLocation : null,
+      images: isCreate || fields.current.has(FormFieldName.images) ? getImages(formData.entries()) : null,
     };
+    console.log(fields.current);
+    console.log(data);
+    onSubmit(data, fields.current);
+  };
 
-    onSubmit(data);
+  const handleFormChange = (e: FormEvent<HTMLFormElement>) => {
+    const target = e.target as HTMLInputElement;
+    let name = target.name;
+    if (name.startsWith(`${FormFieldName.image}[`)) {
+      name = FormFieldName.images;
+    }
+    if (name.startsWith(FormFieldName.good)) {
+      name = FormFieldName.goods;
+    }
+    fields.current.add(name);
+  };
+
+  const handleTypeChange = () => {
+    fields.current.add('type');
   };
 
   return (
@@ -122,6 +149,7 @@ const OfferForm = <T extends Offer | NewOffer>({
       action="src/components/offer-form/offer-form#"
       method="post"
       onSubmit={handleFormSubmit}
+      onChange={handleFormChange}
     >
       <fieldset className="title-fieldset">
         <div className="form__input-wrapper">
@@ -173,7 +201,7 @@ const OfferForm = <T extends Offer | NewOffer>({
           placeholder="Preview image"
           name={FormFieldName.previewImage}
           id="previewImage"
-          required
+          required={isCreate}
         />
       </div>
       <fieldset className="images-fieldset">
@@ -186,9 +214,9 @@ const OfferForm = <T extends Offer | NewOffer>({
               className="form__input offer-form__text-input"
               type="file"
               placeholder="Offer image"
-              name={`image-${key}`}
+              name={`image[${key}]`}
               id={`image-${index}`}
-              required
+              required={isCreate}
             />
           </div>
         ))}
@@ -203,6 +231,7 @@ const OfferForm = <T extends Offer | NewOffer>({
             className="type-fieldset__select"
             classNamePrefix="react-select"
             name={FormFieldName.type}
+            onChange={handleTypeChange}
             id="type"
             defaultValue={{ value: type, label: capitalize(type) }}
             options={TYPES.map((typeItem) => ({

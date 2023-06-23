@@ -35,4 +35,7 @@ export default class UpdateOfferRdo {
   @Expose()
   @Type(() => LocationRdo)
   public location?: LocationRdo;
+
+  @Expose()
+  public city?: string;
 }

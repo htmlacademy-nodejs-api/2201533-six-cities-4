@@ -3,7 +3,12 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { SiteData } from '../../types/state';
 import { StoreSlice, SubmitStatus } from '../../const';
 import { fetchOffers, fetchOffer, fetchPremiumOffers, fetchComments, postComment, postFavorite, deleteFavorite, fetchFavoriteOffers, postOffer, editOffer } from '../action';
-import {adaptOffersToClient, adaptOfferToClient} from '../../adapters/adapters-to-client';
+import {
+  adaptCommentsToClient,
+  adaptCommentToClient,
+  adaptOffersToClient,
+  adaptOfferToClient
+} from '../../adapters/adapters-to-client';
 
 const initialState: SiteData = {
   offers: [],
@@ -37,7 +42,7 @@ export const siteData = createSlice({
         state.isFavoriteOffersLoading = true;
       })
       .addCase(fetchFavoriteOffers.fulfilled, (state, action) => {
-        state.favoriteOffers = action.payload;
+        state.favoriteOffers = adaptOffersToClient(action.payload);
         state.isFavoriteOffersLoading = false;
       })
       .addCase(fetchFavoriteOffers.rejected, (state) => {
@@ -54,33 +59,32 @@ export const siteData = createSlice({
         state.isOfferLoading = false;
       })
       .addCase(postOffer.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.offers.push(adaptOfferToClient(action.payload));
       })
       .addCase(editOffer.fulfilled, (state, action) => {
-        const updatedOffer = action.payload;
+        const updatedOffer = adaptOfferToClient(action.payload);
         state.offers = state.offers.map((offer) => offer.id === updatedOffer.id ? updatedOffer : offer);
         state.favoriteOffers = state.favoriteOffers.map((offer) => offer.id === updatedOffer.id ? updatedOffer : offer);
         state.premiumOffers = state.premiumOffers.map((offer) => offer.id === updatedOffer.id ? updatedOffer : offer);
       })
       .addCase(fetchPremiumOffers.fulfilled, (state, action) => {
-        state.premiumOffers = action.payload;
+        state.premiumOffers = adaptOffersToClient(action.payload);
       })
       .addCase(fetchComments.fulfilled, (state, action) => {
-        state.comments = action.payload;
+        state.comments = adaptCommentsToClient(action.payload);
       })
       .addCase(postComment.pending, (state) => {
         state.commentStatus = SubmitStatus.Pending;
       })
       .addCase(postComment.fulfilled, (state, action) => {
-        state.comments.push(action.payload);
+        state.comments.push(adaptCommentToClient(action.payload));
         state.commentStatus = SubmitStatus.Fullfilled;
       })
       .addCase(postComment.rejected, (state) => {
         state.commentStatus = SubmitStatus.Rejected;
       })
       .addCase(postFavorite.fulfilled, (state, action) => {
-        const updatedOffer = action.payload;
+        const updatedOffer = adaptOfferToClient(action.payload);
         state.offers = state.offers.map((offer) => offer.id === updatedOffer.id ? updatedOffer : offer);
         state.premiumOffers = state.premiumOffers.map((offer) => offer.id === updatedOffer.id ? updatedOffer : offer);
         state.favoriteOffers = state.favoriteOffers.concat(updatedOffer);
@@ -90,7 +94,7 @@ export const siteData = createSlice({
         }
       })
       .addCase(deleteFavorite.fulfilled, (state, action) => {
-        const updatedOffer = action.payload;
+        const updatedOffer = adaptOfferToClient(action.payload);
         state.offers = state.offers.map((offer) => offer.id === updatedOffer.id ? updatedOffer : offer);
         state.premiumOffers = state.premiumOffers.map((offer) => offer.id === updatedOffer.id ? updatedOffer : offer);
         state.favoriteOffers = state.favoriteOffers.filter((favoriteOffer) => favoriteOffer.id !== updatedOffer.id);

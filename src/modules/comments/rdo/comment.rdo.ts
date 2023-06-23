@@ -14,4 +14,7 @@ export default class CommentRdo {
   @Expose()
   @Type(() => UserRdo)
   public author!: UserRdo;
+
+  @Expose()
+  public offer!: string;
 }

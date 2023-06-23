@@ -29,8 +29,8 @@ const EditOffer = (): JSX.Element | null => {
     return null;
   }
 
-  const handleFormSubmit = (offerData: Offer) => {
-    dispatch(editOffer(offerData));
+  const handleFormSubmit = (offerData: Offer, fields: Set<string> | undefined) => {
+    dispatch(editOffer({offer: offerData, fields: fields!}));
   };
 
   return (
@@ -38,7 +38,7 @@ const EditOffer = (): JSX.Element | null => {
       <div className="container">
         <section>
           <h1>Edit offer</h1>
-          <OfferForm offer={offer} onSubmit={handleFormSubmit} />
+          <OfferForm offer={offer} onSubmit={handleFormSubmit} isCreate={false}/>
         </section>
       </div>
     </main>

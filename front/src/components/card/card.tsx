@@ -46,7 +46,7 @@ const Card = ({
         <Link to={`${AppRoute.Property}/${id}`}>
           <img
             className="place-card__image"
-            src={previewImage}
+            src={previewImage as string}
             width={isMini ? 150 : 260}
             height={isMini ? 110 : 200}
             alt={title}

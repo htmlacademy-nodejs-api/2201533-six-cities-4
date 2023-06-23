@@ -19,14 +19,14 @@ export default class FavoritesService implements FavoritesServiceInterface {
     if (!added){
       added = await this.favoritesModel.create({user, offer});
     }
-    // return added;
     return await this.favoritesModel
       .findById(added.id)
       .populate({path: 'offer', populate: ['city', 'host']}) as DocumentType<FavoritesEntity>;
-    // const addedOffer = fillDTO(OfferRdo, favorite);
-    // // addedOffer.isFavorite = true;
-    // // console.log(addedOffer.city.id);
-    // return addedOffer;
+  }
+
+  public async deleteByOffer(offerId: string): Promise<number> {
+    const deleted = await this.favoritesModel.deleteMany({offer: offerId}).exec();
+    return deleted.deletedCount;
   }
 
   public async delete(offer: string, user: string): Promise<DocumentType<FavoritesEntity> | null> {
@@ -34,21 +34,9 @@ export default class FavoritesService implements FavoritesServiceInterface {
     return await this.favoritesModel
       .findOneAndDelete({user, offer})
       .populate({path: 'offer', populate: ['city', 'host']}).exec();
-    // const deletedOffer = await this.offerService.findById(offer);
-    // deletedOffer.isFavorite = false;
-    // return deletedOffer;
   }
 
   public async select(user: string): Promise<DocumentType<FavoritesEntity>[]> {
     return await this.favoritesModel.find({user}).populate({path: 'offer', populate: ['city', 'host']}).exec();
-    // const offers: DocumentType<OfferEntity>[] = [];
-    //
-    // const promises = favorites.map((item) => this.offerService.findById(item.offer.id, user).then(
-    //   (offer) => {
-    //     offers.push(offer as DocumentType<OfferEntity>);
-    //   }
-    // ));
-    // await Promise.all(promises);
-    // return offers;
   }
 }

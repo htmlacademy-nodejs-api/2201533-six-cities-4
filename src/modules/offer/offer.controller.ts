@@ -25,7 +25,9 @@ import {TrimLikeRdoMiddleware} from '../middlewares/trim-like-rdo.middleware.js'
 import {IsHostMiddleware} from '../middlewares/authenticate/is-host.middleware.js';
 import {AuthorizedMiddleware} from '../middlewares/authenticate/authorized.middleware.js';
 import {CheckCityMiddleware} from '../middlewares/validators/check-city.middleware.js';
-import {CityServiceInterface} from "../city/city-service.interface";
+import {CityServiceInterface} from '../city/city-service.interface.js';
+import {CommentServiceInterface} from '../comments/comment.service.interface.js';
+import {FavoritesServiceInterface} from '../favorites/favorites.service.interface.js';
 
 @injectable()
 export default class OfferController extends Controller {
@@ -33,7 +35,9 @@ export default class OfferController extends Controller {
     @inject(AppComponent.LoggerInterface) protected readonly logger: LoggerInterface,
     @inject(AppComponent.OfferServiceInterface) private readonly offerService: OfferServiceInterface,
     @inject(AppComponent.ConfigInterface) configService: ConfigInterface<RestSchema>,
-    @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface
+    @inject(AppComponent.CityServiceInterface) private readonly cityService: CityServiceInterface,
+    @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
+    @inject(AppComponent.FavoritesServiceInterface) private readonly favoriteService: FavoritesServiceInterface
   ) {
     super(logger, configService);
 
@@ -72,8 +76,9 @@ export default class OfferController extends Controller {
           'offer',
           UpdateOfferRdo
         ),
-        new TrimLikeRdoMiddleware(UpdateOfferRdo),
         new LocationInstanceMiddleware(),
+        new TrimLikeRdoMiddleware(UpdateOfferRdo),
+        new CheckCityMiddleware(this.cityService),
         new ValidateDtoMiddleware(UpdateOfferDto, true)
       ]}
     );
@@ -120,6 +125,10 @@ export default class OfferController extends Controller {
   public async delete(req: Request, res: Response): Promise<void> {
     const offerId = req.params.offerId as string;
     const offer = await this.offerService.delete(offerId);
+    const commentsCount = await this.commentService.deleteByOffer(offerId);
+    this.logger.info(`deleted ${commentsCount} comments`);
+    const favoritesCount = await this.favoriteService.deleteByOffer(offerId);
+    this.logger.info(`deleted ${favoritesCount} recs of favorite`);
     this.noContent(res, offer);
   }
 }

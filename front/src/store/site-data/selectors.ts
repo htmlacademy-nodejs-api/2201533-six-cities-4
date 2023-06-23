@@ -9,12 +9,12 @@ export const getIsOffersLoading = ({ [StoreSlice.SiteData]: SITE_DATA }: State):
 export const getOffers = ({ [StoreSlice.SiteData]: SITE_DATA}: State): OfferItem[] => SITE_DATA.offers;
 
 export const getIsFavoriteOffersLoading = ({ [StoreSlice.SiteData]: SITE_DATA }: State): boolean => SITE_DATA.isFavoriteOffersLoading;
-export const getFavoriteOffers = ({ [StoreSlice.SiteData]: SITE_DATA}: State): Offer[] => SITE_DATA.favoriteOffers;
+export const getFavoriteOffers = ({ [StoreSlice.SiteData]: SITE_DATA}: State): OfferItem[] => SITE_DATA.favoriteOffers;
 
 export const getIsOfferLoading = ({ [StoreSlice.SiteData]: SITE_DATA }: State): boolean => SITE_DATA.isOfferLoading;
 export const getOffer = ({ [StoreSlice.SiteData]: SITE_DATA }: State): Offer | null => SITE_DATA.offer;
 
-export const getPremiumOffers = ({ [StoreSlice.SiteData]: SITE_DATA }: State): Offer[] => SITE_DATA.premiumOffers;
+export const getPremiumOffers = ({ [StoreSlice.SiteData]: SITE_DATA }: State): OfferItem[] => SITE_DATA.premiumOffers;
 export const getComments = ({ [StoreSlice.SiteData]: SITE_DATA }: State): Comment[] => SITE_DATA.comments;
 export const getCommentStatus = ({ [StoreSlice.SiteData]: SITE_DATA }: State): SubmitStatus => SITE_DATA.commentStatus;
 

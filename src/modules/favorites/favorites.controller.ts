@@ -9,8 +9,6 @@ import {Request, Response} from 'express';
 import {fillDTO} from '../../core/helpers/common.js';
 import {FavoritesServiceInterface} from './favorites.service.interface.js';
 import {OfferServiceInterface} from '../offer/offer-service.interface.js';
-import {plainToInstance} from 'class-transformer';
-import ChangeFavoriteRdo from './rdo/change-favorite.rdo.js';
 import {FavoritesEntity} from './favorites.entity.js';
 import {DocumentType} from '@typegoose/typegoose';
 import OfferItemRdo from '../offer/rdo/offer-item.rdo.js';
@@ -40,7 +38,17 @@ export default class FavoritesController extends Controller {
     this.addRoute({
       path: '/:offerId',
       method: HttpMethod.Post,
-      handler: this.change,
+      handler: this.add,
+      middlewares: [
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        new AuthorizedMiddleware(),
+      ]
+    });
+
+    this.addRoute({
+      path: '/:offerId',
+      method: HttpMethod.Delete,
+      handler: this.delete,
       middlewares: [
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         new AuthorizedMiddleware(),
@@ -48,14 +56,18 @@ export default class FavoritesController extends Controller {
     });
   }
 
-  public async change({body, params}: Request, res: Response) : Promise<void> {
+  public async add({params}: Request, res: Response) : Promise<void> {
     const offer = params.offerId;
     const user = res.locals.user.id;
-    const rdo = plainToInstance(ChangeFavoriteRdo, body, { excludeExtraneousValues: true });
-    const favorite = rdo.isFavorite ?
-      await this.favoritesService.add(offer, user) :
-      await this.favoritesService.delete(offer, user) as DocumentType<FavoritesEntity>;
-    this.ok(res, {...fillDTO(OfferRdo, favorite.offer), isFavorite: rdo.isFavorite });
+    const favorite = await this.favoritesService.add(offer, user);
+    this.ok(res, {...fillDTO(OfferRdo, favorite.offer), isFavorite: true });
+  }
+
+  public async delete({params}: Request, res: Response) : Promise<void> {
+    const offer = params.offerId;
+    const user = res.locals.user.id;
+    const favorite = await this.favoritesService.delete(offer, user) as DocumentType<FavoritesEntity>;
+    this.ok(res, {...fillDTO(OfferRdo, favorite.offer), isFavorite: false });
   }
 
   public async index(_req: Request, res: Response) : Promise<void> {

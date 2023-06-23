@@ -38,7 +38,7 @@ export type OfferItem = {
   isFavorite: boolean;
   city: City;
   location: Location;
-  previewImage: string;
+  previewImage: string | File;
   type: Type;
 }
 
@@ -51,13 +51,13 @@ export type Offer = {
   isFavorite: boolean;
   city: City;
   location: Location;
-  previewImage: string;
+  previewImage: string | File;
   type: Type;
   bedrooms: number;
   description: string;
   goods: string[];
   host: User;
-  images: string[];
+  images: string[] | File[];
   maxAdults: number;
 };
 
@@ -75,6 +75,11 @@ export type NewOffer = {
   location: Location;
   images: File[];
 };
+
+export type EditOfferProps = {
+  offer: Offer,
+  fields: Set<string>
+}
 
 export type NewComment = Pick<Comment, 'comment' | 'rating'>;
 export type UserAuth = Pick<User, 'email'> & { password: string };

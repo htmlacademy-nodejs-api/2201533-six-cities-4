@@ -73,14 +73,15 @@ export default class ImportCommand implements CliCommandInterface {
     this.databaseService = new MongoClientService(new ConsoleLoggerService());
   }
 
-  private async fillCities() {
+  private async fillCities():Promise<number> {
     const cityValues = Object.values(cities);
     if (await this.cityService.getCount() === cityValues.length) {
-      return;
+      return 0;
     }
     for (const city of cityValues) {
       await this.cityService.create(city);
     }
+    return cityValues.length;
   }
 
   private async saveUser(user: CreateUserDto) {
@@ -158,7 +159,8 @@ export default class ImportCommand implements CliCommandInterface {
     output.write('\u001B[?25l');
     console.log(chalk.greenBright(`Импорт строк предложений из ${filename}`));
     try {
-      await this.fillCities();
+      const loadedCities = await this.fillCities();
+      console.log(`Загружено ${loadedCities} городов`);
       [this.userCount, this.offerCount] = await fileReader.getRowsCount();
       this.progress?.param(fstatSync(fileHandle.fd).size, this.userCount + this.offerCount);
       await fileReader.read();

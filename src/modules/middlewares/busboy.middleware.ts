@@ -7,20 +7,21 @@ import mime from 'mime';
 import {createWriteStream} from 'node:fs';
 import {ClassConstructor, plainToInstance} from 'class-transformer';
 import {mimeTypes} from '../consts.js';
-// import CreateUserRdo from "../user/rdo/create-user.rdo";
 
 export class BusboyMiddleware<RDO> implements MiddlewareInterface {
   private obj = {};
   private files: {[p: string]: string[]};
   private fieldNames: string[];
+  private readonly count: { [x: string]: number; };
   constructor(
     private uploadDirectory: string,
-    private fields: {[p: string]: number},
+    fields: {[p: string]: number},
     private jsonFieldName: string,
     private rdo: ClassConstructor<RDO>
   ) {
-    this.fieldNames = Object.keys(this.fields);
+    this.fieldNames = Object.keys(fields);
     this.files = {};
+    this.count = Object.assign({}, fields);
   }
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -28,11 +29,8 @@ export class BusboyMiddleware<RDO> implements MiddlewareInterface {
     const bb = busboy({headers: req.headers});
     res.locals.files = [];
     bb.on('file', (nameFull, file, info) => {
-      console.log('BusboyMiddleware nameFull:', nameFull);
       const name = nameFull.indexOf('[') === -1 ? nameFull : nameFull.substring(0, nameFull.indexOf('['));
-      console.log('BusboyMiddleware name:', name);
-      if (this.fieldNames.includes(name) && mimeTypes.includes(info.mimeType) && this.fields[name] > 0) {
-        console.log(`'BusboyMiddleware count ${name}:`, this.fields[name]);
+      if (this.fieldNames.includes(name) && mimeTypes.includes(info.mimeType) && this.count[name] > 0) {
         if (!Object.keys(this.files).includes(name)){
           this.files[name] = [];
         }
@@ -49,7 +47,7 @@ export class BusboyMiddleware<RDO> implements MiddlewareInterface {
           this.files[name].push(filename);
           res.locals.files.push(saveTo);
         }));
-        this.fields[name] --;
+        this.count[name] --;
       } else {
         file.resume();
       }
@@ -61,10 +59,8 @@ export class BusboyMiddleware<RDO> implements MiddlewareInterface {
     });
     bb.on('close', () => {
       filePromises.forEach((promise) => promise);
-      // console.log('BusboyMiddleware obj:', this.obj);
       console.log('BusboyMiddleware files:', this.files);
       req.body = plainToInstance(this.rdo, Object.assign(this.obj, this.files));
-      // console.log('BusboyMiddleware body:', req.body);
       this.files = {};
       next();
     });
