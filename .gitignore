@@ -9,8 +9,10 @@
 .DS_Store
 coverage
 *.log
-*env
+*.tmp.http
+.env
 
 /mongodb/
 /temp/
 /temporary/
+/upload/

@@ -13,7 +13,7 @@ import {config, DotenvParseOutput} from 'dotenv';
 import UserService from '../../modules/user/user.service.js';
 import {UserModel} from '../../modules/user/user.entity.js';
 import {createUser} from '../helpers/user.js';
-import {Offer} from '../../types/offer.type.js';
+import {Offer} from '../../types/offer.types';
 import {OfferServiceInterface} from '../../modules/offer/offer-service.interface.js';
 import OfferService from '../../modules/offer/offer.service.js';
 import {OfferModel} from '../../modules/offer/offer.entity.js';
@@ -26,6 +26,15 @@ import MongoClientService from '../database-client/mongo-client.service.js';
 import {getMongoURI} from '../helpers/mongo-conection-string.js';
 import {cities} from '../../types/cities.enum.js';
 import ConsoleLoggerService from '../logger/console.service.js';
+import {ConfigInterface} from '../config/config.interface.js';
+import {RestSchema} from '../config/rest.schema.js';
+import ConfigService from '../config/config.service.js';
+import {CommentServiceInterface} from '../../modules/comments/comment.service.interface.js';
+import CommentService from '../../modules/comments/comment.service.js';
+import {CommentModel} from '../../modules/comments/comment.entity.js';
+import FavoritesService from '../../modules/favorites/favorites.service.js';
+import {FavoritesServiceInterface} from '../../modules/favorites/favorites.service.interface.js';
+import {FavoritesModel} from '../../modules/favorites/favorites.entity.js';
 
 export default class ImportCommand implements CliCommandInterface {
   public readonly name = '--import';
@@ -39,7 +48,10 @@ export default class ImportCommand implements CliCommandInterface {
   private userService: UserServiceInterface;
   private offerService: OfferServiceInterface;
   private cityService: CityServiceInterface;
+  private readonly commentService: CommentServiceInterface;
   private databaseService!: DatabaseClientInterface;
+  private readonly configService!: ConfigInterface<RestSchema>;
+  private readonly favoriteService!: FavoritesServiceInterface;
 
   constructor() {
     this.progress = createProgressImport();
@@ -47,19 +59,29 @@ export default class ImportCommand implements CliCommandInterface {
     this.config = config().parsed as DotenvParseOutput;
     this.salt = this.config['SALT'];
     this.userService = new UserService(this.logger, UserModel);
-    this.offerService = new OfferService(this.logger, OfferModel);
+    this.commentService = new CommentService(this.logger, CommentModel);
+    this.configService = new ConfigService(this.logger);
+    this.favoriteService = new FavoritesService(FavoritesModel);
+    this.offerService = new OfferService(
+      this.logger,
+      OfferModel,
+      this.commentService,
+      this.configService,
+      this.favoriteService
+    );
     this.cityService = new CityService(this.logger, CityModel);
     this.databaseService = new MongoClientService(new ConsoleLoggerService());
   }
 
-  private async fillCities() {
+  private async fillCities():Promise<number> {
     const cityValues = Object.values(cities);
     if (await this.cityService.getCount() === cityValues.length) {
-      return;
+      return 0;
     }
     for (const city of cityValues) {
       await this.cityService.create(city);
     }
+    return cityValues.length;
   }
 
   private async saveUser(user: CreateUserDto) {
@@ -137,7 +159,8 @@ export default class ImportCommand implements CliCommandInterface {
     output.write('\u001B[?25l');
     console.log(chalk.greenBright(`Импорт строк предложений из ${filename}`));
     try {
-      await this.fillCities();
+      const loadedCities = await this.fillCities();
+      console.log(`Загружено ${loadedCities} городов`);
       [this.userCount, this.offerCount] = await fileReader.getRowsCount();
       this.progress?.param(fstatSync(fileHandle.fd).size, this.userCount + this.offerCount);
       await fileReader.read();

@@ -2,5 +2,6 @@ export const entitiesName = {
   cities: 'cities',
   users: 'users',
   offers: 'offers',
-  comments: 'comments'
+  comments: 'comments',
+  favorites: 'favorites'
 };
