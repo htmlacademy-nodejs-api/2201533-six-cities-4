@@ -54,12 +54,14 @@ export default class CommentController extends Controller {
 
   public async create(req: Request, res: Response): Promise<void> {
     const offerId = req.params.offerId;
-    const comment = await this.offerService.addComment(offerId,{
+    const dto = {
       ...req.body,
       date: dayjs().toISOString(),
       author: res.locals.user.id,
       offer: offerId
-    });
+    };
+    const offerTitle = await this.offerService.addComment(offerId,dto);
+    const comment = this.commentService.create(dto, offerTitle);
     this.created(res, fillDTO(CommentRdo, comment));
   }
 }

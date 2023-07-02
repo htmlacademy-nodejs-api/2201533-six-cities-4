@@ -7,6 +7,8 @@ import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import {NIL as uuidNil, v4 as uuidV4} from 'uuid';
+import {fillDTO} from '../../core/helpers/common.js';
+import UpdateAvatarDto from './dto/update-avatar.dto.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -22,6 +24,12 @@ export default class UserService implements UserServiceInterface {
     this.logger.info(`New user created: ${user.email}`);
 
     return result;
+  }
+
+  public async updateAvatar(path: string, userId: string): Promise<DocumentType<UserEntity>> {
+    const user =
+      await this.userModel.findByIdAndUpdate(userId, fillDTO(UpdateAvatarDto, {avatarPath:path}));
+    return user as DocumentType<UserEntity>;
   }
 
   public async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
@@ -42,12 +50,9 @@ export default class UserService implements UserServiceInterface {
     return await this.userModel.findById(userId).exec();
   }
 
-  public async verifyToken(userId: string, tokenId: string): Promise<boolean> {
+  public async verifyToken(userId: string): Promise<boolean> {
     const user = await this.findById(userId);
-    if (user) {
-      return user.tokenId === tokenId;
-    }
-    return false;
+    return !!user;
   }
 
   public async resetToken(userId: string) {
@@ -60,7 +65,6 @@ export default class UserService implements UserServiceInterface {
 
   public async verifyUser(dto: LoginUserDto, salt: string): Promise<DocumentType<UserEntity> | null> {
     const user = await this.findByEmail(dto.email);
-
     if (! user) {
       return null;
     }

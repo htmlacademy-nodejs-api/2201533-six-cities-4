@@ -11,8 +11,6 @@ import {IMAGES_COUNT, SORT_DEFAULT} from '../consts.js';
 import {OfferFilterType} from '../../types/offer.types.js';
 import {ConfigInterface} from '../../core/config/config.interface.js';
 import {RestSchema} from '../../core/config/rest.schema.js';
-import {CommentServiceInterface} from '../comments/comment.service.interface.js';
-import {CommentEntity} from '../comments/comment.entity.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import {FavoritesServiceInterface} from '../favorites/favorites.service.interface.js';
@@ -22,7 +20,6 @@ export default class OfferService implements OfferServiceInterface {
   constructor(
     @inject(AppComponent.LoggerInterface) private readonly logger: LoggerInterface,
     @inject(AppComponent.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
-    @inject(AppComponent.CommentServiceInterface) private readonly commentService: CommentServiceInterface,
     @inject(AppComponent.ConfigInterface) private readonly config: ConfigInterface<RestSchema>,
     @inject(AppComponent.FavoritesServiceInterface) private readonly favoritesService: FavoritesServiceInterface
   ) {}
@@ -76,7 +73,7 @@ export default class OfferService implements OfferServiceInterface {
     return this.findById(idOffer);
   }
 
-  public async addComment(id: string, dto: CreateCommentDto): Promise<DocumentType<CommentEntity> | null> {
+  public async addComment(id: string, dto: CreateCommentDto): Promise<string> {
     const offer = await this.findById(id);
     if (!offer) {
       throw new Error(`Offer with id: ${id} not found.`);
@@ -85,7 +82,7 @@ export default class OfferService implements OfferServiceInterface {
     offer.rating = (offer.rating * offer.commentsCount + dto.rating) / count;
     offer.commentsCount = count;
     await offer.save();
-    return await this.commentService.create(dto, offer.title);
+    return offer.title;
   }
 
   public async delete(id: string): Promise<DocumentType<OfferEntity> | null> {

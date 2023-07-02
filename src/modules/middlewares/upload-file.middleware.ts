@@ -3,6 +3,7 @@ import {NextFunction, Request, Response} from 'express';
 import multer, {diskStorage} from 'multer';
 import {nanoid} from 'nanoid';
 import mime from 'mime';
+import {mimeTypes} from '../consts.js';
 
 export class UploadFileMiddleware implements MiddlewareInterface {
   constructor(
@@ -11,7 +12,9 @@ export class UploadFileMiddleware implements MiddlewareInterface {
   ) {}
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
-    console.log('UploadFileMiddleware');
+    if (!mimeTypes.includes(mime.lookup(req.file?.filename as string))) {
+      return;
+    }
     const storage = diskStorage({
       destination: this.uploadDirectory,
       filename: (_req, file, callback) => {

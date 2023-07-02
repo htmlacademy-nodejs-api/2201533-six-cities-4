@@ -13,17 +13,17 @@ import {STATIC_RESOURCE_FIELDS} from '../../app/consts.js';
 
 @injectable()
 export abstract class Controller implements ControllerInterface {
-  private readonly _router: Router;
+  private readonly routerProp: Router;
 
   constructor(
     protected readonly logger: LoggerInterface,
     protected readonly configService: ConfigInterface<RestSchema>,
   ) {
-    this._router = Router();
+    this.routerProp = Router();
   }
 
   get router() {
-    return this._router;
+    return this.routerProp;
   }
 
   public addRoute(route: RouteInterface) {
@@ -33,7 +33,7 @@ export abstract class Controller implements ControllerInterface {
     );
 
     const allHandlers = middlewares ? [...middlewares, routeHandler] : routeHandler;
-    this._router[route.method](route.path, allHandlers);
+    this.routerProp[route.method](route.path, allHandlers);
     this.logger.info(`Route registered: ${route.method.toUpperCase()} ${route.path}`);
   }
 

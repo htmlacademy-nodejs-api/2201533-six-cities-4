@@ -34,7 +34,7 @@ export default class RestApplication {
     this.expressApplication = express();
   }
 
-  private async _initDb() {
+  private async initDb() {
     this.logger.info('Init database');
 
     const mongoUri = getMongoURI(
@@ -51,7 +51,7 @@ export default class RestApplication {
     this.logger.info('Init database completed');
   }
 
-  private async _initServer() {
+  private async initServer() {
     this.logger.info('Try to init server...');
 
     const port = this.config.get('PORT');
@@ -60,7 +60,7 @@ export default class RestApplication {
     this.logger.info(`🚀Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`);
   }
 
-  private async _initMiddleware() {
+  private async initMiddleware() {
     this.logger.info('Global middleware initialization...');
     this.expressApplication.use(express.json());
     this.expressApplication.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
@@ -73,7 +73,7 @@ export default class RestApplication {
     this.logger.info('Global middleware initialization completed');
   }
 
-  private async _initRoutes() {
+  private async initRoutes() {
     this.logger.info('Controller initialization ...');
     this.expressApplication.use('/offers', this.offerController.router);
     this.expressApplication.use('/favorites', this.favoritesController.router);
@@ -83,7 +83,7 @@ export default class RestApplication {
     this.logger.info('Controller initialization completed');
   }
 
-  private async _initExceptionFilters() {
+  private async initExceptionFilters() {
     this.logger.info('Exception filters initialization');
     this.expressApplication.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
     this.expressApplication.use(this.httpErrorExceptionFilter.catch.bind(this.httpErrorExceptionFilter));
@@ -95,12 +95,12 @@ export default class RestApplication {
     this.logger.info('Application initialization...');
     this.config.getAll().forEach(([name, value]) =>
       this.logger.info(`Get value from env $${name}: ${value}`));
-    await this._initDb();
+    await this.initDb();
     await fillCities();
     this.logger.info('Cities added to base');
-    await this._initMiddleware();
-    await this._initRoutes();
-    await this._initExceptionFilters();
-    await this._initServer();
+    await this.initMiddleware();
+    await this.initRoutes();
+    await this.initExceptionFilters();
+    await this.initServer();
   }
 }
