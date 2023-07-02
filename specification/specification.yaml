@@ -8,7 +8,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.0"
 servers:
-  - url: https://api.server.test/v1
+  - url: http://localhost:5000
 tags:
   - name: offers
     description: Действия с объявлениями.

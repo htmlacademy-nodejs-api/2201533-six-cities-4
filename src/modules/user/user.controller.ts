@@ -16,7 +16,6 @@ import LoginUserDto from './dto/login-user.dto.js';
 import {createJWT} from '../../core/helpers/create-jwt.js';
 import {JWT_ALGORITHM, userImageFields} from '../consts.js';
 import LoggedUserRdo from './rdo/logged-user.rdo.js';
-import {ObjectIdValidator} from '../middlewares/validators/object-id.validator.js';
 import {BusboyMiddleware} from '../middlewares/busboy.middleware.js';
 import {ValidateDtoMiddleware} from '../middlewares/validators/dto.validator.js';
 import CreateUserRdo from './rdo/create-user.rdo.js';
@@ -63,11 +62,11 @@ export default class UserController extends Controller {
       middlewares: [new AuthorizedMiddleware()]
     });
     this.addRoute({
-      path: '/:userId/avatar',
-      method: HttpMethod.Post,
+      path: '/avatar',
+      method: HttpMethod.Patch,
       handler: this.uploadAvatar,
       middlewares: [
-        new ObjectIdValidator('userId'),
+        new AuthorizedMiddleware(),
         new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
       ]
     });
@@ -78,7 +77,6 @@ export default class UserController extends Controller {
     res: Response,
   ): Promise<void> {
     const existsUser = await this.userService.findByEmail(body.email);
-
     if (existsUser) {
       throw new HttpError(
         StatusCodes.CONFLICT,
@@ -127,9 +125,9 @@ export default class UserController extends Controller {
   }
 
   public async uploadAvatar(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path
-    });
+    const result =
+      await this.userService.updateAvatar(req.file?.path as string, res.locals.user.id);
+    this.created(res, result);
   }
 
   public async checkAuthenticate(_req: Request, res: Response) {
@@ -148,7 +146,6 @@ export default class UserController extends Controller {
   }
 
   public async logout(_req: Request, res: Response) {
-    this.userService.resetToken(res.locals.user.id);
     this.noContent(res, 'User is logout');
   }
 }

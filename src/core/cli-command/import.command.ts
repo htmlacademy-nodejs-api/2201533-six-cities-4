@@ -29,9 +29,6 @@ import ConsoleLoggerService from '../logger/console.service.js';
 import {ConfigInterface} from '../config/config.interface.js';
 import {RestSchema} from '../config/rest.schema.js';
 import ConfigService from '../config/config.service.js';
-import {CommentServiceInterface} from '../../modules/comments/comment.service.interface.js';
-import CommentService from '../../modules/comments/comment.service.js';
-import {CommentModel} from '../../modules/comments/comment.entity.js';
 import FavoritesService from '../../modules/favorites/favorites.service.js';
 import {FavoritesServiceInterface} from '../../modules/favorites/favorites.service.interface.js';
 import {FavoritesModel} from '../../modules/favorites/favorites.entity.js';
@@ -48,7 +45,6 @@ export default class ImportCommand implements CliCommandInterface {
   private userService: UserServiceInterface;
   private offerService: OfferServiceInterface;
   private cityService: CityServiceInterface;
-  private readonly commentService: CommentServiceInterface;
   private databaseService!: DatabaseClientInterface;
   private readonly configService!: ConfigInterface<RestSchema>;
   private readonly favoriteService!: FavoritesServiceInterface;
@@ -59,13 +55,11 @@ export default class ImportCommand implements CliCommandInterface {
     this.config = config().parsed as DotenvParseOutput;
     this.salt = this.config['SALT'];
     this.userService = new UserService(this.logger, UserModel);
-    this.commentService = new CommentService(this.logger, CommentModel);
     this.configService = new ConfigService(this.logger);
     this.favoriteService = new FavoritesService(FavoritesModel);
     this.offerService = new OfferService(
       this.logger,
       OfferModel,
-      this.commentService,
       this.configService,
       this.favoriteService
     );

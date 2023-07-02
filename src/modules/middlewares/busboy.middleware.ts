@@ -30,7 +30,7 @@ export class BusboyMiddleware<RDO> implements MiddlewareInterface {
     res.locals.files = [];
     bb.on('file', (nameFull, file, info) => {
       const name = nameFull.indexOf('[') === -1 ? nameFull : nameFull.substring(0, nameFull.indexOf('['));
-      if (this.fieldNames.includes(name) && mimeTypes.includes(info.mimeType) && this.count[name] > 0) {
+      if (this.fieldNames.includes(name) && mimeTypes.includes(mime.lookup(info.filename)) && this.count[name] > 0) {
         if (!Object.keys(this.files).includes(name)){
           this.files[name] = [];
         }

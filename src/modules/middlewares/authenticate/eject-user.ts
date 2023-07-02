@@ -16,7 +16,7 @@ export async function ejectUser(req: Request, jwtSecret: string, userService: Us
       token,
       createSecretKey(jwtSecret, 'utf-8')
     );
-    const isGood = await userService.verifyToken(payload.id as string, payload.jti as string);
+    const isGood = await userService.verifyToken(payload.id as string);
     if (isGood) {
       return payload as UserTokenType;
     } else {
