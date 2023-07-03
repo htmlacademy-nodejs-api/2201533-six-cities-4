@@ -7,8 +7,6 @@ import {AppComponent} from '../../types/app-component.enum.js';
 import {LoggerInterface} from '../../core/logger/logger.interface.js';
 import LoginUserDto from './dto/login-user.dto.js';
 import {NIL as uuidNil, v4 as uuidV4} from 'uuid';
-import {fillDTO} from '../../core/helpers/common.js';
-import UpdateAvatarDto from './dto/update-avatar.dto.js';
 
 @injectable()
 export default class UserService implements UserServiceInterface {
@@ -26,9 +24,10 @@ export default class UserService implements UserServiceInterface {
     return result;
   }
 
-  public async updateAvatar(path: string, userId: string): Promise<DocumentType<UserEntity>> {
-    const user =
-      await this.userModel.findByIdAndUpdate(userId, fillDTO(UpdateAvatarDto, {avatarPath:path}));
+  public async updateAvatar(fileName: string, userId: string): Promise<DocumentType<UserEntity>> {
+    const user = await this.findById(userId) as DocumentType<UserEntity>;
+    user.avatarPath = fileName;
+    await user.save();
     return user as DocumentType<UserEntity>;
   }
 

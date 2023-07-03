@@ -126,7 +126,7 @@ export default class UserController extends Controller {
 
   public async uploadAvatar(req: Request, res: Response) {
     const result =
-      await this.userService.updateAvatar(req.file?.path as string, res.locals.user.id);
+      await this.userService.updateAvatar(req.file?.filename as string, res.locals.user.id);
     this.created(res, result);
   }
 
