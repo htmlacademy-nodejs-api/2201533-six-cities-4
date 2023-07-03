@@ -13,10 +13,6 @@ export const mimeTypes = [
   'image/png'
 ];
 
-export const pictureTypes = [
-  'jpg', 'jpeg', 'png'
-];
-
 export const IMAGES_COUNT = 6;
 
 export const offerImageFields = {
